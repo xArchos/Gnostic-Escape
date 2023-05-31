@@ -236,9 +236,7 @@ public class SimpleGame extends Application {
 
         canvasSetup();
 
-        //JavaFX Timeline = free form animation defined by KeyFrames and their duration
         Timeline tl = new Timeline(new KeyFrame(Duration.millis(10), e -> run(gc)));
-        //number of cycles in animation INDEFINITE = repeat indefinitely
         tl.setCycleCount(Timeline.INDEFINITE);
 
         primaryStage.setScene(new Scene(new StackPane(canvas)));
