@@ -203,7 +203,7 @@ public class ImagesWrapper
 
     public static void setButtonCastSpellImage(Button b)
     {
-        castSpellIconView.setFitHeight(30);
+        castSpellIconView.setFitHeight(55);
         castSpellIconView.setPreserveRatio(true);
         b.setGraphic(castSpellIconView);
     }

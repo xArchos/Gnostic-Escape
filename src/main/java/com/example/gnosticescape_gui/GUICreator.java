@@ -74,7 +74,7 @@ public class GUICreator
       playersTable.setMinWidth(479);
       playersTable.setMaxHeight(200);
       playersTable.setMinHeight(200);
-      playersTable.setPlaceholder(new Label("Nie ma graczy"));
+      playersTable.setPlaceholder(new Label("BRAK GRACZY"));
       playersTable.setStyle("-fx-background-color: #4c0640"+";"+"-fx-text-fill: #ffffff");
 
 
@@ -82,7 +82,7 @@ public class GUICreator
       playerNameColumn.setMaxWidth(70);
       playerNameColumn.setMinWidth(70);
       //playerNameColumn.setStyle("-fx-background-color: linear-gradient(to top,#4c0640,#ffdab9)");
-      playerNameColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: Georgia"+";"+"-fx-font-size: 15px"+";"+"-fx-font-weight: bold");
+      playerNameColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold");
 
       playerNameColumn.setCellValueFactory(data ->
       {
@@ -90,21 +90,21 @@ public class GUICreator
          return new SimpleStringProperty("GRACZ " + player.getId());
       });
 
-      TableColumn<Player, String> playerXYColumn = new TableColumn<>("X, Y");
+      TableColumn<Player, String> playerXYColumn = new TableColumn<>("(X,Y)");
       playerXYColumn.setMaxWidth(70);
       playerXYColumn.setMinWidth(70);
-      playerXYColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: Georgia"+";"+"-fx-font-size: 15px"+";"+"-fx-font-weight: bold");
+      playerXYColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold");
 
       playerXYColumn.setCellValueFactory(data ->
       {
          Player player = data.getValue();
-         return new SimpleStringProperty("X: " + player.getCoordX() + ", Y: " + player.getCoordY());
+         return new SimpleStringProperty("("+player.getCoordX() + "," + player.getCoordY()+")");
       });
 
       TableColumn<Player, String> playerHealthColumn = new TableColumn<>("ŻYCIE");
       playerHealthColumn.setMaxWidth(140);
       playerHealthColumn.setMinWidth(140);
-      playerHealthColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font-size: 15px"+";"+"-fx-font-weight: bold");
+      playerHealthColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold");
 
       TableColumn<Player, String> playerReversedColumn = new TableColumn<>("");
       playerReversedColumn.setMaxWidth(50);
@@ -335,7 +335,7 @@ public class GUICreator
 
    public void setupSpellMenu()
    {
-      spellMenu.getItems().addAll("Spowolnienie", "Ślepota", "Lekkość", "Inwersja", "Obrażenia");
+      spellMenu.getItems().addAll("SPOWOLNIENIE", "ŚLEPOTA", "LEKKOŚĆ", "INWERSJA", "OBRAŻENIA");
       spellMenu.setCellFactory(e -> new ListCell<String>()
       {
          private ImageView iconView = new ImageView();
@@ -349,24 +349,24 @@ public class GUICreator
             {
                switch(name)
                {
-                  case "Spowolnienie":
-                     setText(name + " (-" + SimpleGame.SLOW_COST + " many)");
+                  case "SPOWOLNIENIE":
+                     setText(name + " (-" + SimpleGame.SLOW_COST+")");
                      iconView.setImage(ImagesWrapper.slowIcon);
                      break;
-                  case "Ślepota":
-                     setText(name + " (-" + SimpleGame.BLIND_COST + " many)");
+                  case "ŚLEPOTA":
+                     setText(name + " (-" + SimpleGame.BLIND_COST+")");
                      iconView.setImage(ImagesWrapper.blindIcon);
                      break;
-                  case "Lekkość":
-                     setText(name + " (-" + SimpleGame.LIGHT_COST + " many)");
+                  case "LEKKOŚĆ":
+                     setText(name + " (-" + SimpleGame.LIGHT_COST+")");
                      iconView.setImage(ImagesWrapper.lightIcon);
                      break;
-                  case "Inwersja":
-                     setText(name + " (-" + SimpleGame.REVERSE_COST + " many)");
+                  case "INWERSJA":
+                     setText(name + " (-" + SimpleGame.REVERSE_COST+")");
                      iconView.setImage(ImagesWrapper.reverseIcon);
                      break;
-                  case "Obrażenia":
-                     setText(name + " (-" + SimpleGame.DAMAGE_COST + " many)");
+                  case "OBRAŻENIA":
+                     setText(name + " (-" + SimpleGame.DAMAGE_COST+")");
                      iconView.setImage(ImagesWrapper.damageIcon);
                      break;
                }
@@ -378,22 +378,26 @@ public class GUICreator
          }
       });
 
-      spellMenu.setLayoutX(0);
-      spellMenu.setLayoutY(275);
+      spellMenu.setLayoutX(70);
+      spellMenu.setLayoutY(480);
       spellMenu.setMaxWidth(130);
       spellMenu.setMinWidth(130);
-      spellMenu.setPromptText("Wybierz zaklęcie");
+      spellMenu.setMinHeight(40);
+      spellMenu.setMaxHeight(40);
+      spellMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      spellMenu.setPromptText("ZAKLĘCIE");
       root.getChildren().add(spellMenu);
 
-      spellPlayerMenu.setConverter(new StringConverter<Player>() {
+      spellPlayerMenu.setConverter(new StringConverter<Player>()
+      {
          @Override
          public String toString(Player player) {
             if(player == null)
             {
-               return "Wybierz gracza";
+               return "GRACZ";
             }
 
-            return "Gracz " + Integer.toString(player.getId());
+            return "GRACZ " + Integer.toString(player.getId());
          }
 
          @Override
@@ -420,20 +424,24 @@ public class GUICreator
          }
       });
 
-      spellPlayerMenu.setLayoutX(130);
-      spellPlayerMenu.setLayoutY(275);
+      spellPlayerMenu.setLayoutX(spellMenu.getLayoutX()+spellMenu.getMaxWidth());
+      spellPlayerMenu.setLayoutY(spellMenu.getLayoutY());
       spellPlayerMenu.setMaxWidth(130);
       spellPlayerMenu.setMinWidth(130);
+      spellPlayerMenu.setMinHeight(40);
+      spellPlayerMenu.setMaxHeight(40);
+      spellPlayerMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       updateSpellPlayerMenu();
       root.getChildren().add(spellPlayerMenu);
 
-      spellButton = new Button("Rzuć zaklęcie");
+      spellButton = new Button();
       ImagesWrapper.setButtonCastSpellImage(spellButton);
-      spellButton.setLayoutX(260);
-      spellButton.setLayoutY(275);
-      spellButton.setMinWidth(50);
-      spellButton.setMinHeight(50);
-      spellButton.setContentDisplay(ContentDisplay.TOP);
+      spellButton.setLayoutX(spellPlayerMenu.getLayoutX()+spellPlayerMenu.getMaxWidth()+20);
+      spellButton.setLayoutY(spellMenu.getLayoutY()-7);
+      spellButton.setMaxWidth(40);
+      spellButton.setMaxHeight(40);
+      spellButton.setStyle("-fx-background-color: transparent"+";"+"-fx-border-color: transparent");
+      spellButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
 
       spellButton.setOnAction(new EventHandler<ActionEvent>()
@@ -450,19 +458,19 @@ public class GUICreator
 
             switch((String)spellMenu.getValue())
             {
-               case "Spowolnienie":
+               case "SPOWOLNIENIE":
                   SimpleGame.slowPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
-               case "Ślepota":
+               case "ŚLEPOTA":
                   SimpleGame.blindPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
-               case "Lekkość":
+               case "LEKKOŚĆ":
                   SimpleGame.lightPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
-               case "Inwersja":
+               case "INWERSJA":
                   SimpleGame.revertPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
-               case "Obrażenia":
+               case "OBRAŻENIA":
                   SimpleGame.harmPlayer(player, SimpleGame.DAMAGE_VALUE);
                   break;
             }
@@ -524,10 +532,10 @@ public class GUICreator
          {
             if(player == null)
             {
-               return "Wybierz gracza";
+               return "GRACZ";
             }
 
-            return "Gracz " + Integer.toString(player.getId());
+            return "GRACZ " + Integer.toString(player.getId());
          }
 
          @Override
@@ -557,34 +565,43 @@ public class GUICreator
 
       teleportPlayerMenu.setLayoutX(70);
       teleportPlayerMenu.setLayoutY(600);
-      teleportPlayerMenu.setMaxWidth(130);
-      teleportPlayerMenu.setMinWidth(130);
+      teleportPlayerMenu.setMaxWidth(spellMenu.getMaxWidth());
+      teleportPlayerMenu.setMinWidth(spellMenu.getMinWidth());
+      teleportPlayerMenu.setMinHeight(spellMenu.getMinHeight());
+      teleportPlayerMenu.setMaxHeight(spellMenu.getMaxHeight());
+      teleportPlayerMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       updateTeleportGUI();
       root.getChildren().add(teleportPlayerMenu);
 
       xTeleportField.setLayoutX(teleportPlayerMenu.getMaxWidth()+teleportPlayerMenu.getLayoutX());
       xTeleportField.setLayoutY(600);
-      xTeleportField.setMaxWidth(75);
-      xTeleportField.setMinWidth(75);
-      xTeleportField.setPromptText("Podaj X");
+      xTeleportField.setMaxWidth(40);
+      xTeleportField.setMinWidth(40);
+      xTeleportField.setMinHeight(40);
+      xTeleportField.setMinHeight(40);
+      xTeleportField.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff");
+      xTeleportField.setPromptText("X:");
 
       yTeleportField.setLayoutX(xTeleportField.getLayoutX()+xTeleportField.getMaxWidth());
       yTeleportField.setLayoutY(600);
-      yTeleportField.setMaxWidth(75);
-      yTeleportField.setMinWidth(75);
-      yTeleportField.setPromptText("Podaj Y");
+      yTeleportField.setMaxWidth(40);
+      yTeleportField.setMinWidth(40);
+      yTeleportField.setMinHeight(40);
+      yTeleportField.setMinHeight(40);
+      yTeleportField.setPromptText("Y:");
+      yTeleportField.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff;");
       root.getChildren().addAll(xTeleportField, yTeleportField);
 
-      teleportButton.setLayoutX(yTeleportField.getLayoutX()+yTeleportField.getMaxWidth());
-      teleportButton.setLayoutY(600);
+      teleportButton.setLayoutX(yTeleportField.getLayoutX()+yTeleportField.getMaxWidth()+20);
+      teleportButton.setLayoutY(yTeleportField.getLayoutY()-15);
       teleportButton.setMaxWidth(75);
       teleportButton.setMinWidth(75);
-      teleportButton.setText("Teleportuj!");
       teleportButton.setMinHeight(75);
       teleportButton.setMaxHeight(75);
+      teleportButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
       teleportButton.setContentDisplay(ContentDisplay.TOP);
       ImageView teleportImageView = new ImageView(ImagesWrapper.teleportIcon);
-      teleportImageView.setFitHeight(40);
+      teleportImageView.setFitHeight(55);
       teleportImageView.setPreserveRatio(true);
       teleportButton.setGraphic(teleportImageView);
       root.getChildren().add(teleportButton);
