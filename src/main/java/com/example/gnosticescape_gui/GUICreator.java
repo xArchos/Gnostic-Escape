@@ -10,15 +10,14 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
 public class GUICreator
@@ -311,21 +310,49 @@ public class GUICreator
 
       if(SimpleGame.winPlayersCount >= SimpleGame.WIN_PLAYERS_END)
       {
-         gc.setFill(Color.BLUE);
-         gc.setFont(new Font("Digital-7", 35));
-         gc.fillText("Uciekinierzy wygrali!", 0, SimpleGame.GAMEBOARD_X * SimpleGame.TILE_X);
+         Rectangle winMessageBox = new Rectangle(500,250);
+         winMessageBox.setArcHeight(12);
+         winMessageBox.setArcWidth(12);
+         winMessageBox.setFill(Color.web("#ffdab9"));
+         Text winMessageText = new Text("UCIEKINIERZY WYGRALI");
+         winMessageText.setFont(Font.font("Georgia",24));
+         winMessageText.setStyle("-fx-text-fill: #36130a");
+
+         StackPane winMessagePane= new StackPane();
+         winMessagePane.getChildren().addAll(winMessageBox,winMessageText);
+         winMessagePane.setStyle("-fx-background-color: transparent");
+         winMessagePane.setMaxWidth(winMessageBox.getWidth());
+         winMessagePane.setMinWidth(winMessageBox.getWidth());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setLayoutX(SimpleGame.WINDOW_WIDTH*0.5);
+         winMessagePane.setLayoutY(200);
+
+         root.getChildren().add(winMessagePane);
       }
 
       if(SimpleGame.deadPlayersCount >= SimpleGame.DEAD_PLAYERS_END)
       {
-         gc.setFill(Color.BLUE);
-         gc.setFont(new Font("Digital-7", 35));
-         gc.fillText("Demiurg wygrał!", 0, SimpleGame.GAMEBOARD_X * SimpleGame.TILE_X);
-      }
+         Rectangle winMessageBox = new Rectangle(500,250);
+         winMessageBox.setArcHeight(12);
+         winMessageBox.setArcWidth(12);
+         winMessageBox.setFill(Color.web("#ffdab9"));
+         Text winMessageText = new Text("DEMIURG WYGRAŁ");
+         winMessageText.setFont(Font.font("Georgia",24));
+         winMessageText.setStyle("-fx-text-fill: #36130a");
 
-      gc.setFill(Color.GREEN);
-      gc.setFont(new Font("Digital-7", 35));
-      gc.fillText(Integer.toString(SimpleGame.getPlayerList().get(0).getHealth()), 0, SimpleGame.GAMEBOARD_X * SimpleGame.TILE_X);
+         StackPane winMessagePane= new StackPane();
+         winMessagePane.getChildren().addAll(winMessageBox,winMessageText);
+         winMessagePane.setStyle("-fx-background-color: transparent");
+         winMessagePane.setMaxWidth(winMessageBox.getWidth());
+         winMessagePane.setMinWidth(winMessageBox.getWidth());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setLayoutX(SimpleGame.WINDOW_WIDTH*0.5);
+         winMessagePane.setLayoutY(200);
+
+         root.getChildren().add(winMessagePane);
+      }
 
       updateTable();
       updateSpellPlayerMenu();
@@ -384,7 +411,7 @@ public class GUICreator
       spellMenu.setMinWidth(130);
       spellMenu.setMinHeight(40);
       spellMenu.setMaxHeight(40);
-      spellMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      spellMenu.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #36130b"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       spellMenu.setPromptText("ZAKLĘCIE");
       root.getChildren().add(spellMenu);
 
@@ -430,7 +457,7 @@ public class GUICreator
       spellPlayerMenu.setMinWidth(130);
       spellPlayerMenu.setMinHeight(40);
       spellPlayerMenu.setMaxHeight(40);
-      spellPlayerMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      spellPlayerMenu.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #36130b"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       updateSpellPlayerMenu();
       root.getChildren().add(spellPlayerMenu);
 
@@ -478,6 +505,15 @@ public class GUICreator
       });
 
       root.getChildren().add(spellButton);
+
+      Label spellLabel = new Label("UROKI");
+      spellLabel.setLayoutX(spellMenu.getLayoutX());
+      spellLabel.setLayoutY(spellMenu.getLayoutY()-2-spellMenu.getMaxHeight());
+      spellLabel.setFont(Font.font("Georgia",20.0));
+      spellLabel.setStyle("-fx-text-fill: #ffffff; ");
+
+      root.getChildren().add(spellLabel);
+
    }
 
    public void updateSpellPlayerMenu()
@@ -569,7 +605,7 @@ public class GUICreator
       teleportPlayerMenu.setMinWidth(spellMenu.getMinWidth());
       teleportPlayerMenu.setMinHeight(spellMenu.getMinHeight());
       teleportPlayerMenu.setMaxHeight(spellMenu.getMaxHeight());
-      teleportPlayerMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      teleportPlayerMenu.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #36130b"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       updateTeleportGUI();
       root.getChildren().add(teleportPlayerMenu);
 
@@ -579,7 +615,7 @@ public class GUICreator
       xTeleportField.setMinWidth(40);
       xTeleportField.setMinHeight(40);
       xTeleportField.setMinHeight(40);
-      xTeleportField.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff");
+      xTeleportField.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff");
       xTeleportField.setPromptText("X:");
 
       yTeleportField.setLayoutX(xTeleportField.getLayoutX()+xTeleportField.getMaxWidth());
@@ -589,7 +625,7 @@ public class GUICreator
       yTeleportField.setMinHeight(40);
       yTeleportField.setMinHeight(40);
       yTeleportField.setPromptText("Y:");
-      yTeleportField.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff;");
+      yTeleportField.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff;");
       root.getChildren().addAll(xTeleportField, yTeleportField);
 
       teleportButton.setLayoutX(yTeleportField.getLayoutX()+yTeleportField.getMaxWidth()+20);
@@ -625,6 +661,14 @@ public class GUICreator
             catch(NumberFormatException nfe) { }
          }
       });
+
+      Label teleportLabel = new Label("TELEPORTACJA");
+      teleportLabel.setLayoutX(teleportPlayerMenu.getLayoutX());
+      teleportLabel.setLayoutY(teleportPlayerMenu.getLayoutY()-2-teleportPlayerMenu.getMaxHeight());
+      teleportLabel.setFont(Font.font("Georgia",20.0));
+      teleportLabel.setStyle("-fx-text-fill: #ffffff; ");
+
+      root.getChildren().add(teleportLabel);
    }
 
    public void updateTeleportGUI()
