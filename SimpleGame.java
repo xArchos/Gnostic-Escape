@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SimpleGame extends Application {
-    private static final int GAMEBOARD_Y = 24;
-    private static final int GAMEBOARD_X = 24;
-    private static Tile[][] Tiles = new Tile[GAMEBOARD_X][GAMEBOARD_Y];
+    //private static final int GAMEBOARD_Y = 24;
+    //private static final int GAMEBOARD_X = 24;
+    //private static Tile[][] Tiles = new Tile[GAMEBOARD_X][GAMEBOARD_Y];
     private static int tick = 0;
     private static final int TICK_CHECK = 500;
     private static final int EFFECT_TICKS = 1500;
@@ -72,93 +72,16 @@ public class SimpleGame extends Application {
     static Canvas canvas = null;
     static GraphicsContext gc = null;
 
+    private static Tile[][] Tiles;
+    private static int GAMEBOARD_X;
+    private static int GAMEBOARD_Y;
+
     public static void main(String[] args) {
-        Player p1 = new Player(2, 2);
-        playerList.add(p1);
 
-        Stone s1 = new Stone(1, 1);
-        Stone s2 = new Stone(1, 2);
-        stoneList.add(s1);
-        stoneList.add(s2);
-
-        OpeningKey ok = new OpeningKey(18, 18);
-        openingKeyList.add(ok);
-
-        for (int i = 0; i < GAMEBOARD_X; i++) {
-            for (int j = 0; j < GAMEBOARD_Y; j++) {
-                Tiles[i][j] = new Tile();
-            }
-        }
-
-        for (int i = 14; i < 21; i++) {
-            Tiles[i][14].setBlock();
-        }
-
-        for (int i = 14; i < 21; i++) {
-            Tiles[14][i].setBlock();
-        }
-
-        for (int i = 14; i < 21; i++) {
-            Tiles[i][20].setBlock();
-        }
-
-        for (int i = 14; i < 21; i++) {
-            Tiles[20][i].setBlock();
-        }
-
-        Teleport t1 = new Teleport(10, 10, 17, 17);
-        teleportList.add(t1);
-        Teleport t2 = new Teleport(4, 4, 5, 5);
-        teleportList.add(t2);
-
-        PressurePlate pl1 = new PressurePlate(6, 6, t2);
-        pressurePlateList.add(pl1);
-
-        Prize pr1 = new Prize(10, 0);
-        prizeList.add(pr1);
-
-        for (int i = 0; i < 5; i++) {
-            Tiles[7][i].setBlock();
-        }
-
-        for (int i = 0; i < 5; i++) {
-            Tiles[13][i].setBlock();
-        }
-
-        for (int i = 7; i < 14; i++) {
-            Tiles[i][5].setBlock();
-        }
-
-        Tiles[10][5].setEmpty();
-
-        Gate g1 = new Gate(10, 5);
-        gateList.add(g1);
-
-        Spike spike1 = new Spike(3, 11, 2);
-        spikeList.add(spike1);
-
-        Pitfall pitfall1 = new Pitfall(14, 6, 200);
-        pitfallList.add(pitfall1);
-
-        HealthPack h1 = new HealthPack(22, 16, 150);
-        healthPackList.add(h1);
-
-        Catapult c1 = new Catapult(15, 5, 5, Direction.LEFT);
-        catapultList.add(c1);
-
-        Catapult c2 = new Catapult(0, 23, 5, Direction.DOWN);
-        catapultList.add(c2);
-
-        Catapult c3 = new Catapult(23, 0, 5, Direction.DOWN);
-        catapultList.add(c3);
-
-        Catapult c4 = new Catapult(23, 23, 5, Direction.DOWN);
-        catapultList.add(c4);
-
-        Lever l1 = new Lever(17, 10, t1);
-        leverList.add(l1);
-
-        Tiles[0][15].setGrowing();
+        MapLoader mapLoader = new MapLoader();
+        Tiles = mapLoader.loadMap("map.txt");
+        GAMEBOARD_X = mapLoader.getGameboardX();
+        GAMEBOARD_Y = mapLoader.getGameboardY();
 
         launch(args);
     }
@@ -226,6 +149,7 @@ public class SimpleGame extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Gnostic Escape");
         primaryStage.show();
+
 
         try {
             imagesSetup();
