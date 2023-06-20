@@ -22,12 +22,8 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -55,17 +51,14 @@ public class SimpleGame extends Application
     public static final int SLOW_COST = 150;
     public static final int DAMAGE_VALUE = 148;
 
-    public static final int GAMEBOARD_Y = 24;
-    public static final int GAMEBOARD_X = 24;
+
     private static final int SPAWN_X = 0;
     private static final int SPAWN_Y = 0;
-    private static final int WINDOW_HEIGHT = GAMEBOARD_Y * TILE_Y + 50;
     public static final int WINDOW_WIDTH = 1300;
 
     public static int mana = INITIAL_MANA;
     static int winPlayersCount = 0;
     static int deadPlayersCount = 0;
-    private static Tile[][] Tiles = new Tile[GAMEBOARD_X][GAMEBOARD_Y];
     private static int tick = 0;
     private static boolean serverOn = true;
     private static ServerSocket serverSocket;
@@ -87,104 +80,22 @@ public class SimpleGame extends Application
     private static List<Catapult> catapultList = new ArrayList<Catapult>();
 
     private static GUICreator gui = null;
+    private static Tile[][] Map;
+    public static int GAMEBOARD_Y;
+    public static int GAMEBOARD_X;
+    private static int WINDOW_HEIGHT;
+
+
 
     public static void main(String[] args)
     {
-        Player p1 = new Player(2, 2);
-        playerList.add(p1);
+        MapLoader mapLoader = new MapLoader();
+        Map = mapLoader.loadMap("map.txt");
+        GAMEBOARD_X = mapLoader.getGameboardX();
+        GAMEBOARD_Y = mapLoader.getGameboardY();
+        WINDOW_HEIGHT = GAMEBOARD_Y * TILE_Y + 50;
 
-        Stone s1 = new Stone(1, 1);
-        Stone s2 = new Stone(1, 2);
-        stoneList.add(s1);
-        stoneList.add(s2);
 
-        OpeningKey ok = new OpeningKey(18, 18);
-        openingKeyList.add(ok);
-
-        for(int i = 0; i < GAMEBOARD_X; i++)
-        {
-            for(int j = 0; j < GAMEBOARD_Y; j++)
-            {
-                Tiles[i][j] = new Tile();
-            }
-        }
-
-        for(int i = 14; i < 21; i++)
-        {
-            Tiles[i][14].setBlock();
-        }
-
-        for(int i = 14; i < 21; i++)
-        {
-            Tiles[14][i].setBlock();
-        }
-
-        for(int i = 14; i < 21; i++)
-        {
-            Tiles[i][20].setBlock();
-        }
-
-        for(int i = 14; i < 21; i++)
-        {
-            Tiles[20][i].setBlock();
-        }
-
-        Teleport t1 = new Teleport(10, 10, 17, 17);
-        teleportList.add(t1);
-        Teleport t2 = new Teleport(4, 4, 5, 5);
-        teleportList.add(t2);
-
-        PressurePlate pl1 = new PressurePlate(6, 6, t2);
-        pressurePlateList.add(pl1);
-
-        Prize pr1 = new Prize(10, 0);
-        prizeList.add(pr1);
-
-        for(int i = 0; i < 5; i++)
-        {
-            Tiles[7][i].setBlock();
-        }
-
-        for(int i = 0; i < 5; i++)
-        {
-            Tiles[13][i].setBlock();
-        }
-
-        for(int i = 7; i < 14; i++)
-        {
-            Tiles[i][5].setBlock();
-        }
-
-        Tiles[10][5].setEmpty();
-
-        Gate g1 = new Gate(10, 5);
-        gateList.add(g1);
-
-        Spike spike1 = new Spike(3, 11, 200);
-        spikeList.add(spike1);
-
-        Pitfall pitfall1 = new Pitfall(14, 6, 200);
-        pitfallList.add(pitfall1);
-
-        HealthPack h1 = new HealthPack(22, 16, 150);
-        healthPackList.add(h1);
-
-        Catapult c1 = new Catapult(15, 5, 5, Direction.LEFT);
-        catapultList.add(c1);
-
-        Catapult c2 = new Catapult(0, 23, 5, Direction.DOWN);
-        catapultList.add(c2);
-
-        Catapult c3 = new Catapult(23, 0, 5, Direction.DOWN);
-        catapultList.add(c3);
-
-        Catapult c4 = new Catapult(23, 23, 5, Direction.DOWN);
-        catapultList.add(c4);
-
-        Lever l1 = new Lever(17, 10, t1);
-        leverList.add(l1);
-
-        Tiles[0][15].setGrowing();
 
         launch(args);
     }
@@ -414,7 +325,7 @@ public class SimpleGame extends Application
 
     public static Tile getTileByIndex(int x, int y)
     {
-        return Tiles[x][y];
+        return Map[x][y];
     }
 
     private void playerPizeCollision()
@@ -562,7 +473,7 @@ public class SimpleGame extends Application
     {
         for(int i = 0; i < playerList.size(); i++)
         {
-            if(Tiles[playerList.get(i).getCoordX()][playerList.get(i).getCoordY()].getType() == TileType.GROWING)
+            if(Map[playerList.get(i).getCoordX()][playerList.get(i).getCoordY()].getType() == TileType.GROWING)
             {
                 playerList.get(i).addHealth(-Tile.getGrowingDamage());
             }
@@ -575,37 +486,37 @@ public class SimpleGame extends Application
         {
             for(int j = 0; j < GAMEBOARD_Y; j++)
             {
-                if(Tiles[i][j].getType() == TileType.GROWING)
+                if(Map[i][j].getType() == TileType.GROWING)
                 {
                     if(i > 0)
                     {
-                        if(Tiles[i - 1][j].getType() == TileType.EMPTY)
+                        if(Map[i - 1][j].getType() == TileType.EMPTY)
                         {
-                            Tiles[i - 1][j].setBeforeGrowing();
+                            Map[i - 1][j].setBeforeGrowing();
                         }
                     }
 
                     if(i < GAMEBOARD_X - 1)
                     {
-                        if(Tiles[i + 1][j].getType() == TileType.EMPTY)
+                        if(Map[i + 1][j].getType() == TileType.EMPTY)
                         {
-                            Tiles[i + 1][j].setBeforeGrowing();
+                            Map[i + 1][j].setBeforeGrowing();
                         }
                     }
 
                     if(j > 0)
                     {
-                        if(Tiles[i][j - 1].getType() == TileType.EMPTY)
+                        if(Map[i][j - 1].getType() == TileType.EMPTY)
                         {
-                            Tiles[i][j - 1].setBeforeGrowing();
+                            Map[i][j - 1].setBeforeGrowing();
                         }
                     }
 
                     if(j < GAMEBOARD_Y - 1)
                     {
-                        if(Tiles[i][j + 1].getType() == TileType.EMPTY)
+                        if(Map[i][j + 1].getType() == TileType.EMPTY)
                         {
-                            Tiles[i][j + 1].setBeforeGrowing();
+                            Map[i][j + 1].setBeforeGrowing();
                         }
                     }
                 }
@@ -616,9 +527,9 @@ public class SimpleGame extends Application
         {
             for(int j = 0; j < GAMEBOARD_Y; j++)
             {
-                if(Tiles[i][j].getType() == TileType.BEFORE_GROWING)
+                if(Map[i][j].getType() == TileType.BEFORE_GROWING)
                 {
-                    Tiles[i][j].setGrowing();
+                    Map[i][j].setGrowing();
                 }
             }
         }
@@ -696,7 +607,7 @@ public class SimpleGame extends Application
             return false;
         }
 
-        if(Tiles[x][y].getType() == TileType.BLOCK)
+        if(Map[x][y].getType() == TileType.BLOCK)
         {
             return false;
         }
