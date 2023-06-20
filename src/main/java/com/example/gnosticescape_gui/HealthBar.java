@@ -4,73 +4,70 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 
-class HealthBar
+class HealthBar extends ProgressBar
 {
-    private ProgressBar hpBar;
+    private Player player =null;
+    //private ProgressBar hpBar;
     private Label hpLabel;
-    private final int MIN_VALUE=0;
-    private final int MAX_VALUE=1000;
-    private boolean dead;
 
-    HealthBar(BorderPane root)
+    HealthBar(Player player)
     {
-        /*VBox bpLeft = new VBox(1);
-        HBox hBox = new HBox();
-        this.hpBar = new ProgressBar(1);
-        this.hpLabel = new Label("100");
-        this.hpLabel.setFont(new Font("Chiller",18));
-        hpBar.setStyle("-fx-accent: #7FFF00;");
-        hBox.getChildren().add(hpLabel);
-        hBox.setAlignment(Pos.BASELINE_LEFT);
-        hBox.setMargin(hpLabel,new Insets(0,0,0,34));
-        bpLeft.getChildren().add(hpBar);
-        bpLeft.getChildren().add(hBox);
-        root.setTop(bpLeft);
-        this.dead=false;*/
+        super((double)(player.getHealth()/Player.START_HEALTH));
+        this.player=player;
+        hpLabel = new Label();
     }
 
-    public ProgressBar getHPBar()
+    public void updateValue()
     {
-        return hpBar;
-    }
+        String barColor="";
 
-    public void setHPBar(int value)
-    {
-        if(value<MIN_VALUE || dead==true)
+        if(player.getHealth()<0 || player.isDead())
         {
-            value=MAX_VALUE;
-            hpBar.setStyle("-fx-accent: grey");
-            dead=true;
+            barColor="-fx-accent: grey";
         }
-        else if(value>MAX_VALUE)
+        else if(player.getHealth()>1000)
         {
-            value=MAX_VALUE;
-            hpBar.setStyle("fx-accent: #00FFFF;");
+           barColor="fx-accent: #00FFFF";
         }
-        else if(value>=750)
+        else if(player.getHealth()>=750)
         {
-            hpBar.setStyle("-fx-accent: #7FFF00;");
+           barColor="-fx-accent: #7FFF00";
         }
-
-        else if(value>=500)
+        else if(player.getHealth()>=500)
         {
-            hpBar.setStyle("-fx-accent: yellow");
+            barColor="-fx-accent: yellow";
         }
-
-        else if(value>=250)
+        else if(player.getHealth()>=250)
         {
-            hpBar.setStyle("-fx-accent: orange");
+            barColor="-fx-accent: orange";
         }
         else
         {
-            hpBar.setStyle("-fx-accent: red");
+            barColor="-fx-accent: red";
         }
-        double healthbarUpdate=value;
-        healthbarUpdate/=1000;
-        hpBar.setProgress(healthbarUpdate);
-        if(dead==true)
+
+        double healthbarUpdate=((double)player.getHealth() / (double)Player.START_HEALTH);
+        setProgress(healthbarUpdate);
+
+        if(player.isDead())
+        {
             hpLabel.setText("DEAD");
+        }
         else
-            hpLabel.setText(Integer.toString((int)Math.round(healthbarUpdate*100)));
+        {
+            hpLabel.setText(player.getHealth() + "/" + Player.START_HEALTH);
+        }
+        hpLabel.setStyle("-fx-text-fill: #ffffff" + ";" + "-fx-font: 13 Georgia");
+        setStyle("-fx-text-box-border: #302c2f;" + ";" + barColor + ";" + "-fx-control-inner-background: #302c2f");
+    }
+
+    public Label getLabel()
+    {
+        return hpLabel;
+    }
+
+    public void setPlayer(Player player)
+    {
+        this.player = player;
     }
 }

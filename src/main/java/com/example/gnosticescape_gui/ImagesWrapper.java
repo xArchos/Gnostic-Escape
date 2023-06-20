@@ -47,7 +47,6 @@ import javafx.event.EventHandler;
 
 public class ImagesWrapper
 {
-    //dostęp pakietowy aby nie tworzyć do tego wszystkiego getterów
     static Image PlayerImage = null;
     static Image deadPlayerImage = null;
     static Image winPlayerImage = null;
@@ -81,14 +80,17 @@ public class ImagesWrapper
     static Image damageIcon = null;
     static Image lightIcon = null;
     static Image slowIcon = null;
+    static Image darkBlockTileImage = null;
+    static Image darkGrowingImage = null;
+    static Image darkEmptyTileImage = null;
 
     static Image demiurgAvatar = null;
 
     static Image castSpellIcon = null;
-    static ImageView castSpellIconView = null;
 
     static int tileX;
     static int tileY;
+    static boolean isDayMode = true;
 
     public static void imagesSetup() throws FileNotFoundException
     {
@@ -195,16 +197,17 @@ public class ImagesWrapper
 
         ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/wand.png");
         castSpellIcon = new Image(ImgInputStream);
-        castSpellIconView = new ImageView(castSpellIcon);
 
-        ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/demiurgAvatar.jpg");
+        ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/demiurgAvatar.png");
         demiurgAvatar = new Image(ImgInputStream);
-    }
 
-    public static void setButtonCastSpellImage(Button b)
-    {
-        castSpellIconView.setFitHeight(55);
-        castSpellIconView.setPreserveRatio(true);
-        b.setGraphic(castSpellIconView);
+        ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/growing_dark.png");
+        darkGrowingImage = new Image(ImgInputStream);
+
+        ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/block_dark.png");
+        darkBlockTileImage = new Image(ImgInputStream);
+
+        ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/tile_dark.png");
+        darkEmptyTileImage = new Image(ImgInputStream);
     }
 }
