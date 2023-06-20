@@ -204,7 +204,6 @@ public class SimpleGame extends Application
 
             gui = new GUICreator();
 
-            gui.createBackground();
             Scene scene = new Scene(gui.root);
             primaryStage.setScene(scene);
 
@@ -293,18 +292,18 @@ public class SimpleGame extends Application
         }
         catch(FileNotFoundException fnfe)
         {
-            System.out.println("Brakuje plików.");
+            GUICreator.showAlert("Brakuje plików.");
             System.exit(1);
         }
         catch(EOFException eofe) { }
         catch(IOException ioe)
         {
-            ioe.printStackTrace();
+            GUICreator.showAlert("Wystąpił błąd odczytu.");
             System.exit(1);
         }
     }
 
-    private void run(GraphicsContext gc_) //TYLKO 1 GRACZ, nie uzywać argumentu (docelowo zrobić z tego po prostu "void run()")
+    private void run(GraphicsContext gc_)
     {
         if(playerList.size() > 0)
         {
@@ -648,86 +647,151 @@ public class SimpleGame extends Application
         gameLock.unlock();
     }
 
-    public static void harmPlayer(Player player, int damage)
+    public static boolean harmPlayer(Player player, int damage)
     {
+        if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+        {
+            return false;
+        }
+
+        if(player.isDead() || player.isWin())
+        {
+            return false;
+        }
+
         if(mana < DAMAGE_COST)
         {
-            return;
+            return false;
         }
 
         mana = mana - DAMAGE_COST;
         player.addHealth(-damage);
+        return true;
     }
 
-    public static void teleportPlayer(Player player, int x, int y)
+    public static boolean teleportPlayer(Player player, int x, int y)
     {
+        if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+        {
+            return false;
+        }
+
+        if(player.isDead() || player.isWin())
+        {
+            return false;
+        }
+
         if(mana < TELEPORT_COST)
         {
-            return;
+            return false;
         }
 
         if(x < 0 || y < 0)
         {
-            return;
+            return false;
         }
 
         if(x >= GAMEBOARD_X || y >= GAMEBOARD_Y)
         {
-            return;
+            return false;
         }
 
         if(Tiles[x][y].getType() == TileType.BLOCK)
         {
-            return;
+            return false;
         }
 
         mana = mana - TELEPORT_COST;
         player.setXY(x, y);
+        return true;
     }
 
-    public static void slowPlayer(Player player, int ticks)
+    public static boolean slowPlayer(Player player, int ticks)
     {
+        if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+        {
+            return false;
+        }
+
+        if(player.isDead() || player.isWin())
+        {
+            return false;
+        }
+
         if(mana < SLOW_COST)
         {
-            return;
+            return false;
         }
 
         mana = mana - SLOW_COST;
         player.setSlow(ticks);
+        return true;
     }
 
-    public static void revertPlayer(Player player, int ticks)
+    public static boolean revertPlayer(Player player, int ticks)
     {
+        if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+        {
+            return false;
+        }
+
+        if(player.isDead() || player.isWin())
+        {
+            return false;
+        }
+
         if(mana < REVERSE_COST)
         {
-            return;
+            return false;
         }
 
         mana = mana - REVERSE_COST;
         player.setReverted(ticks);
+        return true;
     }
 
-    public static void blindPlayer(Player player, int ticks)
+    public static boolean blindPlayer(Player player, int ticks)
     {
+        if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+        {
+            return false;
+        }
+
+        if(player.isDead() || player.isWin())
+        {
+            return false;
+        }
+
         if(mana < BLIND_COST)
         {
-            return;
+            return false;
         }
 
         mana = mana - BLIND_COST;
         player.setBlind(ticks);
+        return true;
     }
 
-    public static void lightPlayer(Player player, int ticks)
+    public static boolean lightPlayer(Player player, int ticks)
     {
+        if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+        {
+            return false;
+        }
+
+        if(player.isDead() || player.isWin())
+        {
+            return false;
+        }
+
         if(mana < LIGHT_COST)
         {
-            return;
+            return false;
         }
 
         mana = mana - LIGHT_COST;
-
         player.setLight(ticks);
+        return true;
     }
 
     private static void togglePortals()
@@ -764,6 +828,13 @@ public class SimpleGame extends Application
                     socketOutputStream.writeObject(responseMessage);
                     socket.close();
                 }
+                else if(!(winPlayersCount < WIN_PLAYERS_END && deadPlayersCount < DEAD_PLAYERS_END))
+                {
+                    GameMessage responseMessage = new GameMessage(GameRequest.KICK);
+                    ObjectOutputStream socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    socketOutputStream.writeObject(responseMessage);
+                    socket.close();
+                }
                 else
                 {
                     GameMessage responseMessage = new GameMessage(GameRequest.OK);
@@ -778,13 +849,10 @@ public class SimpleGame extends Application
                 }
             }
         }
-        catch(IOException ioe) //zawsze wypisze stack przy zamknięciu
-        {
-            ioe.printStackTrace();
-        }
+        catch(IOException ioe) { }
         catch(ClassNotFoundException cnfe)
         {
-            cnfe.printStackTrace();
+            GUICreator.showAlert("Wystąpił błąd");
         }
     }
 
@@ -803,6 +871,7 @@ public class SimpleGame extends Application
         }
         catch(IOException ioe)
         {
+            GUICreator.showAlert("Wystąpił błąd odczytu.");
             ioe.printStackTrace();
         }
     }

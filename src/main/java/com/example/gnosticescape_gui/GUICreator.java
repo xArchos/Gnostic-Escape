@@ -6,19 +6,19 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
 public class GUICreator
@@ -33,20 +33,27 @@ public class GUICreator
    private ManaBar manaBar = null;
    private Label manaValueLabel = null;
 
+   private DayModeSwitcher dayNightSwitcher = null;
+
    private Label manaLabel=null;
    private Button teleportButton = new Button();
    private TextField yTeleportField = new TextField();
    private TextField xTeleportField = new TextField();
    private ComboBox teleportPlayerMenu = new ComboBox();
 
+   private Pane spellPane = null;
+   private Button dayModeButton = new Button();
+
    GUICreator()
    {
       createCanvas();
+      createBackground();
       setupPlayersTable();
       setupSpellMenu();
       setupManaBar();
       setupTeleportGUI();
       setupDemiurgAvatar();
+      setupDayModeButton();
    }
 
    private void createCanvas()
@@ -81,8 +88,8 @@ public class GUICreator
       TableColumn<Player, String> playerNameColumn = new TableColumn<>("GRACZ");
       playerNameColumn.setMaxWidth(70);
       playerNameColumn.setMinWidth(70);
-      //playerNameColumn.setStyle("-fx-background-color: linear-gradient(to top,#4c0640,#ffdab9)");
-      playerNameColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold");
+      playerNameColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold" + ";" + "");
+      playerNameColumn.setId("GRACZ");
 
       playerNameColumn.setCellValueFactory(data ->
       {
@@ -94,6 +101,7 @@ public class GUICreator
       playerXYColumn.setMaxWidth(70);
       playerXYColumn.setMinWidth(70);
       playerXYColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold");
+      playerXYColumn.setId("(X,Y)");
 
       playerXYColumn.setCellValueFactory(data ->
       {
@@ -105,6 +113,34 @@ public class GUICreator
       playerHealthColumn.setMaxWidth(140);
       playerHealthColumn.setMinWidth(140);
       playerHealthColumn.setStyle("-fx-background-color: #4c0640"+";"+"-fx-border-color: #4c0640" + ";" + "-fx-text-fill: #ffffff"+";"+"-fx-font: 13 Georgia"+";"+"-fx-font-size: 13;"+";"+"-fx-font-weight: bold");
+      playerHealthColumn.setId("ŻYCIE");
+
+      playerHealthColumn.setCellFactory(param -> new TableCell<Player, String>()
+      {
+         private HealthBar hpBar = null;
+         private Label hpLabel = null;
+         private VBox vbox = null;
+
+         @Override
+         protected void updateItem(String item, boolean empty)
+         {
+            super.updateItem(item, empty);
+            if(!empty)
+            {
+               Player player = (Player)getTableRow().getItem();
+
+               if(player != null)
+               {
+                  hpBar = new HealthBar(player);
+                  hpBar.updateValue();
+                  hpLabel = hpBar.getLabel();
+                  vbox = new VBox(hpBar, hpLabel);
+                  vbox.setAlignment(Pos.CENTER);
+                  setGraphic(vbox);
+               }
+            }
+         }
+      });
 
       TableColumn<Player, String> playerReversedColumn = new TableColumn<>("");
       playerReversedColumn.setMaxWidth(50);
@@ -224,7 +260,6 @@ public class GUICreator
 
       playersTable.getColumns().addAll(playerNameColumn, playerXYColumn, playerHealthColumn);
       playersTable.getColumns().addAll(playerReversedColumn, playerSlowColumn, playerLightColumn, playerBlindColumn);
-
       updateTable();
       root.getChildren().add(playersTable);
    }
@@ -311,21 +346,49 @@ public class GUICreator
 
       if(SimpleGame.winPlayersCount >= SimpleGame.WIN_PLAYERS_END)
       {
-         gc.setFill(Color.BLUE);
-         gc.setFont(new Font("Digital-7", 35));
-         gc.fillText("Uciekinierzy wygrali!", 0, SimpleGame.GAMEBOARD_X * SimpleGame.TILE_X);
+         Rectangle winMessageBox = new Rectangle(500,250);
+         winMessageBox.setArcHeight(12);
+         winMessageBox.setArcWidth(12);
+         winMessageBox.setFill(Color.web("#ffdab9"));
+         Text winMessageText = new Text("UCIEKINIERZY WYGRALI");
+         winMessageText.setFont(Font.font("Georgia",24));
+         winMessageText.setStyle("-fx-text-fill: #36130a");
+
+         StackPane winMessagePane= new StackPane();
+         winMessagePane.getChildren().addAll(winMessageBox,winMessageText);
+         winMessagePane.setStyle("-fx-background-color: transparent");
+         winMessagePane.setMaxWidth(winMessageBox.getWidth());
+         winMessagePane.setMinWidth(winMessageBox.getWidth());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setLayoutX(SimpleGame.WINDOW_WIDTH*0.5);
+         winMessagePane.setLayoutY(200);
+
+         root.getChildren().add(winMessagePane);
       }
 
       if(SimpleGame.deadPlayersCount >= SimpleGame.DEAD_PLAYERS_END)
       {
-         gc.setFill(Color.BLUE);
-         gc.setFont(new Font("Digital-7", 35));
-         gc.fillText("Demiurg wygrał!", 0, SimpleGame.GAMEBOARD_X * SimpleGame.TILE_X);
-      }
+         Rectangle winMessageBox = new Rectangle(500,250);
+         winMessageBox.setArcHeight(12);
+         winMessageBox.setArcWidth(12);
+         winMessageBox.setFill(Color.web("#ffdab9"));
+         Text winMessageText = new Text("DEMIURG WYGRAŁ");
+         winMessageText.setFont(Font.font("Georgia",24));
+         winMessageText.setStyle("-fx-text-fill: #36130a");
 
-      gc.setFill(Color.GREEN);
-      gc.setFont(new Font("Digital-7", 35));
-      gc.fillText(Integer.toString(SimpleGame.getPlayerList().get(0).getHealth()), 0, SimpleGame.GAMEBOARD_X * SimpleGame.TILE_X);
+         StackPane winMessagePane= new StackPane();
+         winMessagePane.getChildren().addAll(winMessageBox,winMessageText);
+         winMessagePane.setStyle("-fx-background-color: transparent");
+         winMessagePane.setMaxWidth(winMessageBox.getWidth());
+         winMessagePane.setMinWidth(winMessageBox.getWidth());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setMinHeight(winMessageBox.getHeight());
+         winMessagePane.setLayoutX(SimpleGame.WINDOW_WIDTH*0.5);
+         winMessagePane.setLayoutY(200);
+
+         root.getChildren().add(winMessagePane);
+      }
 
       updateTable();
       updateSpellPlayerMenu();
@@ -384,7 +447,7 @@ public class GUICreator
       spellMenu.setMinWidth(130);
       spellMenu.setMinHeight(40);
       spellMenu.setMaxHeight(40);
-      spellMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      spellMenu.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #36130b"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       spellMenu.setPromptText("ZAKLĘCIE");
       root.getChildren().add(spellMenu);
 
@@ -430,12 +493,15 @@ public class GUICreator
       spellPlayerMenu.setMinWidth(130);
       spellPlayerMenu.setMinHeight(40);
       spellPlayerMenu.setMaxHeight(40);
-      spellPlayerMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      spellPlayerMenu.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #36130b"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       updateSpellPlayerMenu();
       root.getChildren().add(spellPlayerMenu);
 
       spellButton = new Button();
-      ImagesWrapper.setButtonCastSpellImage(spellButton);
+      ImageView castSpellIconView = new ImageView(ImagesWrapper.castSpellIcon);
+      castSpellIconView.setFitHeight(55);
+      castSpellIconView.setPreserveRatio(true);
+      spellButton.setGraphic(castSpellIconView);
       spellButton.setLayoutX(spellPlayerMenu.getLayoutX()+spellPlayerMenu.getMaxWidth()+20);
       spellButton.setLayoutY(spellMenu.getLayoutY()-7);
       spellButton.setMaxWidth(40);
@@ -456,28 +522,43 @@ public class GUICreator
                return;
             }
 
+            boolean spellCasted = false;
+
             switch((String)spellMenu.getValue())
             {
                case "SPOWOLNIENIE":
-                  SimpleGame.slowPlayer(player, SimpleGame.EFFECT_TICKS);
+                  spellCasted = SimpleGame.slowPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
                case "ŚLEPOTA":
-                  SimpleGame.blindPlayer(player, SimpleGame.EFFECT_TICKS);
+                  spellCasted = SimpleGame.blindPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
                case "LEKKOŚĆ":
-                  SimpleGame.lightPlayer(player, SimpleGame.EFFECT_TICKS);
+                  spellCasted = SimpleGame.lightPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
                case "INWERSJA":
-                  SimpleGame.revertPlayer(player, SimpleGame.EFFECT_TICKS);
+                  spellCasted = SimpleGame.revertPlayer(player, SimpleGame.EFFECT_TICKS);
                   break;
                case "OBRAŻENIA":
-                  SimpleGame.harmPlayer(player, SimpleGame.DAMAGE_VALUE);
+                  spellCasted = SimpleGame.harmPlayer(player, SimpleGame.DAMAGE_VALUE);
                   break;
+            }
+
+            if(!spellCasted)
+            {
+               showSpellInterruptedMessage("NIE MOŻNA RZUCIĆ ZAKLĘCIA");
             }
          }
       });
 
       root.getChildren().add(spellButton);
+
+      Label spellLabel = new Label("UROKI");
+      spellLabel.setLayoutX(spellMenu.getLayoutX());
+      spellLabel.setLayoutY(spellMenu.getLayoutY()-2-spellMenu.getMaxHeight());
+      spellLabel.setFont(Font.font("Georgia",20.0));
+      spellLabel.setStyle("-fx-text-fill: #ffffff; ");
+
+      root.getChildren().add(spellLabel);
    }
 
    public void updateSpellPlayerMenu()
@@ -569,7 +650,7 @@ public class GUICreator
       teleportPlayerMenu.setMinWidth(spellMenu.getMinWidth());
       teleportPlayerMenu.setMinHeight(spellMenu.getMinHeight());
       teleportPlayerMenu.setMaxHeight(spellMenu.getMaxHeight());
-      teleportPlayerMenu.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
+      teleportPlayerMenu.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #36130b"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+";"+"-fx-border-color: #302c2f");
       updateTeleportGUI();
       root.getChildren().add(teleportPlayerMenu);
 
@@ -579,7 +660,7 @@ public class GUICreator
       xTeleportField.setMinWidth(40);
       xTeleportField.setMinHeight(40);
       xTeleportField.setMinHeight(40);
-      xTeleportField.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff");
+      xTeleportField.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff");
       xTeleportField.setPromptText("X:");
 
       yTeleportField.setLayoutX(xTeleportField.getLayoutX()+xTeleportField.getMaxWidth());
@@ -589,7 +670,7 @@ public class GUICreator
       yTeleportField.setMinHeight(40);
       yTeleportField.setMinHeight(40);
       yTeleportField.setPromptText("Y:");
-      yTeleportField.setStyle("-fx-background-color: #ab1294"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff;");
+      yTeleportField.setStyle("-fx-background-color: #261f1f"+";"+"-fx-base: #4c0640"+";"+"fx-font: 15 Georgia"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 13;"+"-fx-text-fill: white;"+";"+"-fx-border-color: #302c2f"+";"+"-fx-control-inner-background: #ffffff;");
       root.getChildren().addAll(xTeleportField, yTeleportField);
 
       teleportButton.setLayoutX(yTeleportField.getLayoutX()+yTeleportField.getMaxWidth()+20);
@@ -618,13 +699,31 @@ public class GUICreator
                return;
             }
 
+            boolean teleportCasted = false;
+
             try
             {
-               SimpleGame.teleportPlayer(player, Integer.parseInt(xTeleportField.getText()), Integer.parseInt(yTeleportField.getText()));
+               teleportCasted = SimpleGame.teleportPlayer(player, Integer.parseInt(xTeleportField.getText()), Integer.parseInt(yTeleportField.getText()));
             }
-            catch(NumberFormatException nfe) { }
+            catch(NumberFormatException nfe)
+            {
+               showSpellInterruptedMessage("WPROWADŹ POPRAWNE KOORDYNATY");
+            }
+
+            if(!teleportCasted)
+            {
+               showSpellInterruptedMessage("NIE MOŻNA TELEPORTOWAĆ");
+            }
          }
       });
+
+      Label teleportLabel = new Label("TELEPORTACJA");
+      teleportLabel.setLayoutX(teleportPlayerMenu.getLayoutX());
+      teleportLabel.setLayoutY(teleportPlayerMenu.getLayoutY()-2-teleportPlayerMenu.getMaxHeight());
+      teleportLabel.setFont(Font.font("Georgia",20.0));
+      teleportLabel.setStyle("-fx-text-fill: #ffffff; ");
+
+      root.getChildren().add(teleportLabel);
    }
 
    public void updateTeleportGUI()
@@ -649,4 +748,61 @@ public class GUICreator
       demiurgAvatar.setLayoutY(30);
       root.getChildren().addAll(demiurgAvatar,demiurgLabel);
    }
+
+   private void showSpellInterruptedMessage(String message)
+   {
+      Rectangle spellRectangle = new Rectangle(400,70);
+      spellRectangle.setArcHeight(12);
+      spellRectangle.setArcWidth(12);
+      spellRectangle.setFill(Color.web("#ffdab9"));
+
+      Label spellLabel = new Label(message);
+      spellLabel.setFont(Font.font("Georgia",18));
+      spellLabel.setStyle("-fx-text-fill: #36130a");
+      spellLabel.setLayoutX(spellRectangle.getLayoutX()+30);
+      spellLabel.setLayoutY(spellRectangle.getLayoutY()+30);
+
+      Label closeButton = new Label("x");
+      closeButton.setFont(Font.font("Georgia",24));
+      closeButton.setStyle("-fx-text-fill: #36130a");
+      closeButton.setLayoutX(spellRectangle.getWidth()+spellRectangle.getLayoutX()-20);
+      closeButton.setLayoutY(spellRectangle.getLayoutY());
+      closeButton.setOnMouseClicked(e->
+        {
+            root.getChildren().remove(spellPane);
+            spellPane=null;
+        }
+      );
+
+      spellPane = new Pane();
+      spellPane.getChildren().addAll(spellRectangle,spellLabel,closeButton);
+      spellPane.setStyle("-fx-background-color: transparent");
+      spellPane.setMaxWidth(spellRectangle.getWidth());
+      spellPane.setMinWidth(spellRectangle.getWidth());
+      spellPane.setMinHeight(spellRectangle.getHeight());
+      spellPane.setMinHeight(spellRectangle.getHeight());
+      spellPane.setLayoutX(SimpleGame.WINDOW_WIDTH*0.5);
+      spellPane.setLayoutY(200);
+
+      root.getChildren().add(spellPane);
+
+
+
+   }
+
+   public void setupDayModeButton()
+   {
+      dayNightSwitcher = new DayModeSwitcher("#f6a4fe","#4c0640","#4c0640","#ffffff",40,20,15);
+      dayNightSwitcher.setLayoutX(200);
+      dayNightSwitcher.setLayoutY(105);
+      root.getChildren().add(dayNightSwitcher);
+   }
+
+   public static void showAlert(String message)
+   {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setContentText(message);
+      alert.showAndWait();
+   }
 }
+

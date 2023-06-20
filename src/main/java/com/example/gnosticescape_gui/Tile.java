@@ -72,18 +72,39 @@ public class Tile implements Serializable
 
     public void draw(GraphicsContext gc, int x, int y)
     {
-        switch(tileType)
+        if(ImagesWrapper.isDayMode)
         {
-            case EMPTY:
-                gc.drawImage(ImagesWrapper.emptyTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
-            break;
-            case BLOCK:
-                gc.drawImage(ImagesWrapper.fullTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
-            break;
-            case GROWING:
-            case BEFORE_GROWING:
-                gc.drawImage(ImagesWrapper.growingImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
-            break;
+            switch(tileType)
+            {
+                case EMPTY:
+                    gc.drawImage(ImagesWrapper.emptyTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    break;
+                case BLOCK:
+                    gc.drawImage(ImagesWrapper.fullTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    break;
+                case GROWING:
+                case BEFORE_GROWING:
+                    gc.drawImage(ImagesWrapper.emptyTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    gc.drawImage(ImagesWrapper.growingImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    break;
+            }
+        }
+        else
+        {
+            switch(tileType)
+            {
+                case EMPTY:
+                    gc.drawImage(ImagesWrapper.darkEmptyTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    break;
+                case BLOCK:
+                    gc.drawImage(ImagesWrapper.darkBlockTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    break;
+                case GROWING:
+                case BEFORE_GROWING:
+                    gc.drawImage(ImagesWrapper.darkEmptyTileImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    gc.drawImage(ImagesWrapper.darkGrowingImage, x * ImagesWrapper.tileX, y * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
+                    break;
+            }
         }
     }
 

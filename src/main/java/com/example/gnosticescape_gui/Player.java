@@ -45,10 +45,11 @@ import javafx.stage.Stage;
 
 public class Player extends Moveable implements Serializable, Cloneable
 {
-    private transient static final int START_HEALTH = 1000;
+    public transient static final int START_HEALTH = 1000;
     private transient static int playersCount = 0;
 
-    private transient int health;
+    private int health;
+
     private boolean isDead = false;
     private boolean isWin = false;
     private int id;
@@ -542,5 +543,9 @@ public class Player extends Moveable implements Serializable, Cloneable
 
     public int getIsLight() {
         return isLight;
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }

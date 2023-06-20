@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import javafx.application.Platform;
 import javafx.util.Duration;
 
 import javafx.animation.*;
@@ -48,24 +50,25 @@ import javafx.event.EventHandler;
 
 public class Client extends Application
 {
-    private static final int START_GAMEBOARD_Y = 10;
-    private static final int START_GAMEBOARD_X = 10;
-    private static final int TILE_Y = 30;
-    private static final int TILE_X = 30;
+    public static final int START_GAMEBOARD_Y = 10;
+    public static final int START_GAMEBOARD_X = 10;
+    public static final int SCREEN_WIDTH = 1200;
+    public static final int SCREEN_HEIGHT = 770;
+    public static final int TILE_Y = 30;
+    public static final int TILE_X = 30;
     private static final int PORT = 1388;
     private static final String ADDRESS = "localhost";
     private static final int SOCKET_TIMEOUT = 5000;
+    private static boolean laterSetup = false;
 
     private static Socket socket;
+
     private static WorldState worldState = null;
     private static GameRequest desiredRequest = GameRequest.OK;
     private static Runnable receiveWorldRunnable;
-    private static Runnable keyboardRunnable;
     private static Thread receiveWorldThread;
-    private static Thread keyboardThread;
 
-    static Canvas canvas = null;
-    static GraphicsContext gc = null;
+    private static GUIClientCreator clientGUI = null;
 
     public static void main(String[] args)
     {
@@ -83,9 +86,9 @@ public class Client extends Application
             ImagesWrapper.tileX = TILE_X;
             ImagesWrapper.tileY = TILE_Y;
 
-            canvasSetup();
+            clientGUI = new GUIClientCreator();
 
-            primaryStage.setScene(new Scene(new StackPane(canvas)));
+            primaryStage.setScene(new Scene(clientGUI.root));
             primaryStage.show();
 
             primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>()
@@ -97,23 +100,18 @@ public class Client extends Application
                     {
                         case W:
                             desiredRequest = GameRequest.MOVE_UP;
-                            System.out.println("W");
                             break;
                         case S:
                             desiredRequest = GameRequest.MOVE_DOWN;
-                            System.out.println("S");
                             break;
                         case A:
                             desiredRequest = GameRequest.MOVE_LEFT;
-                            System.out.println("A");
                             break;
                         case D:
                             desiredRequest = GameRequest.MOVE_RIGHT;
-                            System.out.println("D");
                         break;
-                        case Q:
+                        case P:
                             desiredRequest = GameRequest.LEAVE;
-                            System.out.println("Q");
                         break;
                     }
                 }
@@ -130,8 +128,8 @@ public class Client extends Application
                 }
             );
 
-            primaryStage.setWidth(1200);
-            primaryStage.setHeight(900);
+            primaryStage.setWidth(SCREEN_WIDTH);
+            primaryStage.setHeight(SCREEN_HEIGHT);
 
             socket = new Socket(ADDRESS, PORT);
             socket.setSoTimeout(SOCKET_TIMEOUT);
@@ -145,7 +143,7 @@ public class Client extends Application
 
             if(joinResponse.getGameRequest() != GameRequest.OK)
             {
-                System.out.println("Serwer odrzucił połączenie.");
+                GUIClientCreator.showAlert("Serwer odrzucił połączenie.");
                 System.exit(1);
             }
 
@@ -158,27 +156,27 @@ public class Client extends Application
             };
             receiveWorldThread = new Thread(receiveWorldRunnable);
             receiveWorldThread.start();
-
-            /*keyboardRunnable = new Runnable()
-            {
-                public void run()
-                {
-                    keyboard();
-                }
-            };
-            keyboardThread = new Thread(keyboardRunnable);
-            keyboardThread.start();*/
         }
         catch(FileNotFoundException fnfe)
         {
-            fnfe.printStackTrace();
-            System.out.println("Brakuje plików.");
+            receiveWorldRunnable = new Runnable()
+            {
+                public void run()
+                {
+                    GUIClientCreator.showAlert("Brakuje plików.");
+                }
+            };
             System.exit(1);
         }
         catch(SocketException se)
         {
-            se.printStackTrace();
-            System.out.println("Serwer może nie być aktywny.");
+            receiveWorldRunnable = new Runnable()
+            {
+                public void run()
+                {
+                    GUIClientCreator.showAlert("Serwer może nie być aktywny.");
+                }
+            };
             System.exit(1);
         }
         catch(EOFException eofe) { }
@@ -192,12 +190,6 @@ public class Client extends Application
         }
     }
 
-    private static void canvasSetup()
-    {
-        canvas = new Canvas(START_GAMEBOARD_X * TILE_X, START_GAMEBOARD_Y * TILE_Y);
-		gc = canvas.getGraphicsContext2D();
-    }
-
     public static void closeGame()
     {
         try
@@ -208,6 +200,11 @@ public class Client extends Application
         {
             ioe.printStackTrace();
         }
+    }
+
+    public static WorldState getWorldState()
+    {
+        return worldState;
     }
 
     private static void receiveWorld()
@@ -263,26 +260,70 @@ public class Client extends Application
                 if(receivedWorld.getWorldState() != null)
                 {
                     worldState = receivedWorld.getWorldState();
-                    canvas.setWidth(worldState.getGameboardX() * TILE_X);
-                    canvas.setHeight(worldState.getGameboardY() * TILE_Y);
-                    drawGame();
-                    System.out.println("Rysuję!");
+                    clientGUI.resizeCanvas(worldState.getGameboardX() * TILE_X, worldState.getGameboardY() * TILE_Y);
+                    clientGUI.moveCanvas(SCREEN_WIDTH - worldState.getGameboardX() * TILE_X - 20, 8);
+                    clientGUI.drawGame();
+
+                    if(!laterSetup)
+                    {
+                        laterSetup = true;
+
+                        Platform.runLater(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                clientGUI.setupLaterElements();
+                            }
+                        });
+                    }
+
+                    Platform.runLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            clientGUI.updateGUIElements();
+                        }
+                    });
                 }
             }
             catch(FileNotFoundException fnfe)
             {
-                fnfe.printStackTrace();
-                System.out.println("Brakuje plików.");
+
+                Platform.runLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        GUIClientCreator.showAlert("Brakuje plików.");
+                    }
+                });
                 System.exit(1);
             }
             catch(SocketException se)
             {
-                se.printStackTrace();
+                Platform.runLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        GUIClientCreator.showAlert("Błąd połączenia.");
+                    }
+                });
                 System.exit(1);
             }
             catch(EOFException eofe)
             {
-                eofe.printStackTrace();
+                Platform.runLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        GUIClientCreator.showAlert("Błąd połączenia.");
+                    }
+                });
+                System.exit(1);
             }
             catch(IOException ioe)
             {
@@ -292,175 +333,6 @@ public class Client extends Application
             {
                 cnfe.printStackTrace();
             }
-        }
-    }
-
-    private static void keyboard()
-    {
-        while(true)
-        {
-            try
-            {
-                GameMessage moveMessage = null;
-                ObjectOutputStream socketOutputStream = null;
-
-                switch(desiredRequest)
-                {
-                    case MOVE_DOWN:
-                        System.out.println("dół 1");
-                        moveMessage = new GameMessage(GameRequest.MOVE_DOWN);
-                        socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                        socketOutputStream.writeObject(moveMessage);
-                        desiredRequest = GameRequest.OK;
-                        System.out.println("dół 2");
-                    break;
-                    case MOVE_UP:
-                        System.out.println("góra 1");
-                        moveMessage = new GameMessage(GameRequest.MOVE_UP);
-                        socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                        socketOutputStream.writeObject(moveMessage);
-                        desiredRequest = GameRequest.OK;
-                        System.out.println("góra 2");
-                    break;
-                    case MOVE_LEFT:
-                        System.out.println("lewo 1");
-                        moveMessage = new GameMessage(GameRequest.MOVE_LEFT);
-                        socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                        socketOutputStream.writeObject(moveMessage);
-                        desiredRequest = GameRequest.OK;
-                        System.out.println("lewo 2");
-                    break;
-                    case MOVE_RIGHT:
-                        System.out.println("prawo 1");
-                        moveMessage = new GameMessage(GameRequest.MOVE_RIGHT);
-                        socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                        socketOutputStream.writeObject(moveMessage);
-                        desiredRequest = GameRequest.OK;
-                        System.out.println("prawo 2");
-                    break;
-                    case LEAVE:
-                        System.out.println("wyjść 1");
-                        moveMessage = new GameMessage(GameRequest.LEAVE);
-                        socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                        socketOutputStream.writeObject(moveMessage);
-                        desiredRequest = GameRequest.OK;
-                        System.out.println("wyjść 2");
-                    break;
-                }
-
-                Thread.sleep(100);
-            }
-            catch(FileNotFoundException fnfe)
-            {
-                fnfe.printStackTrace();
-                System.out.println("Brakuje plików.");
-                System.exit(1);
-            }
-            catch(SocketException se)
-            {
-                se.printStackTrace();
-                System.exit(1);
-            }
-            catch(EOFException eofe)
-            {
-                eofe.printStackTrace();
-            }
-            catch(InterruptedException ie)
-            {
-                ie.printStackTrace();
-            }
-            catch(IOException ioe)
-            {
-                ioe.printStackTrace();
-            }
-        }
-    }
-
-    private static void drawGame()
-    {
-        try
-        {
-            gc.setFill(Color.BLACK);
-            gc.fillRect(0, 0, worldState.getGameboardY() * TILE_Y, worldState.getGameboardX() * TILE_X);
-
-            for(int i = 0; i < worldState.getGameboardX(); i++)
-            {
-                for(int j = 0; j < worldState.getGameboardY(); j++)
-                {
-                    worldState.getTileByIndex(i, j).draw(gc, i, j);
-                }
-            }
-
-            for(int i = 0; i < worldState.getTeleportList().size(); i++)
-            {
-                worldState.getTeleportList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getPrizeList().size(); i++)
-            {
-                worldState.getPrizeList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getGateList().size(); i++)
-            {
-                worldState.getGateList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getHealthPackList().size(); i++)
-            {
-                worldState.getHealthPackList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getSpikeList().size(); i++)
-            {
-                worldState.getSpikeList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i <  worldState.getCatapultList().size(); i++)
-            {
-                worldState.getCatapultList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getPressurePlateList().size(); i++)
-            {
-                worldState.getPressurePlateList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getLeverList().size(); i++)
-            {
-                worldState.getLeverList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getPitfallList().size(); i++)
-            {
-            worldState.getPitfallList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i <worldState.getPlayerList().size(); i++)
-            {
-                worldState.getPlayerList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getStoneList().size(); i++)
-            {
-                worldState.getStoneList().get(i).draw(gc);
-            }
-
-            for(int i = 0; i < worldState.getOpeningKeyList().size(); i++)
-            {
-                worldState.getOpeningKeyList().get(i).draw(gc);
-            }
-
-            //hp
-            //x
-            //y
-            //ślepy?
-            //ile wygrało
-            //ile umarło
-        }
-        catch(NullPointerException npe)
-        {
-            npe.printStackTrace();
         }
     }
 }
