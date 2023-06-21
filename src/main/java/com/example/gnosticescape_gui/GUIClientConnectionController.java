@@ -18,15 +18,13 @@ import javafx.stage.Stage;
 
 import java.net.Socket;
 
-public class GUIClientConnectionController
-{
+public class GUIClientConnectionController {
     public Pane root = new Pane();
-    private TextField portField = new TextField();
-    private TextField ipField = new TextField();
-    private Button connectButton = new Button();
+    private final TextField portField = new TextField();
+    private final TextField ipField = new TextField();
+    private final Button connectButton = new Button();
 
-    public GUIClientConnectionController()
-    {
+    public GUIClientConnectionController() {
         ipField.setPromptText("Podaj IP...");
         ipField.setMaxWidth(300);
         ipField.setMinWidth(300);
@@ -55,30 +53,23 @@ public class GUIClientConnectionController
         connectButton.setStyle("-fx-background-color: #FCEBCC; -fx-text-fill: #000000; -fx-font: 13 Georgia");
 
         root.getChildren().addAll(ipField, portField, connectButton);
-        Stop[] stops = new Stop[] {new Stop(0, Color.web("0xFCEBCC")),new Stop(1,Color.web("0x730500"))};
-        root.setBackground(new Background(new BackgroundFill(new LinearGradient(1,0,0,0,true, CycleMethod.NO_CYCLE,stops), CornerRadii.EMPTY, Insets.EMPTY)));
+        Stop[] stops = new Stop[]{new Stop(0, Color.web("0xFCEBCC")), new Stop(1, Color.web("0x730500"))};
+        root.setBackground(new Background(new BackgroundFill(new LinearGradient(1, 0, 0, 0, true, CycleMethod.NO_CYCLE, stops), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        connectButton.setOnAction(new EventHandler<ActionEvent>()
-        {
+        connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent)
-            {
-                try
-                {
+            public void handle(ActionEvent actionEvent) {
+                try {
                     Client.ADDRESS = ipField.getText();
                     Client.PORT = Integer.parseInt(portField.getText());
 
                     Socket socket = new Socket(Client.ADDRESS, Client.PORT);
                     Client.setSocket(socket);
 
-                    Client.clientSetup((Stage)(((Node)actionEvent.getSource()).getScene().getWindow()));
-                }
-                catch(NumberFormatException nfe)
-                {
+                    Client.clientSetup((Stage) (((Node) actionEvent.getSource()).getScene().getWindow()));
+                } catch (NumberFormatException nfe) {
                     GUICreator.showAlert("Nie udało się dołączyć do gry.");
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     GUICreator.showAlert("Wystąpił błąd połączenia się z grą!");
                     System.exit(1);
                 }

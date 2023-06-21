@@ -1,25 +1,18 @@
 package com.example.gnosticescape_gui;
-import java.io.EOFException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.ClassNotFoundException;
-import java.lang.Runnable;
-import java.lang.Thread;
-import java.net.Socket;
-import java.net.SocketException;
 
-import javafx.application.Platform;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class Client extends Application
-{
+import java.io.*;
+import java.net.Socket;
+import java.net.SocketException;
+
+public class Client extends Application {
     public static final int START_GAMEBOARD_Y = 10;
     public static final int START_GAMEBOARD_X = 10;
     public static final int SCREEN_WIDTH = 1200;
@@ -40,13 +33,11 @@ public class Client extends Application
 
     private static GUIClientCreator clientGUI = null;
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         launch(args);
     }
 
-    public void start(Stage primaryStage)
-    {
+    public void start(Stage primaryStage) {
         GUIClientConnectionController guiConnect = new GUIClientConnectionController();
         primaryStage.setTitle("Gnostic Escape - Uciekinier");
         primaryStage.setScene(new Scene(guiConnect.root));
@@ -57,10 +48,8 @@ public class Client extends Application
         primaryStage.show();
     }
 
-    public static void clientSetup(Stage primaryStage)
-    {
-        try
-        {
+    public static void clientSetup(Stage primaryStage) {
+        try {
             ImagesWrapper.imagesSetup();
             ImagesWrapper.tileX = TILE_X;
             ImagesWrapper.tileY = TILE_Y;
@@ -73,38 +62,23 @@ public class Client extends Application
             primaryStage.setHeight(SCREEN_HEIGHT);
             primaryStage.show();
 
-            primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>()
-            {
+            primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
                 @Override
-                public void handle(KeyEvent event)
-                {
-                    switch(event.getCode())
-                    {
-                        case W:
-                            desiredRequest = GameRequest.MOVE_UP;
-                            break;
-                        case S:
-                            desiredRequest = GameRequest.MOVE_DOWN;
-                            break;
-                        case A:
-                            desiredRequest = GameRequest.MOVE_LEFT;
-                            break;
-                        case D:
-                            desiredRequest = GameRequest.MOVE_RIGHT;
-                            break;
-                        case P:
-                            desiredRequest = GameRequest.LEAVE;
-                            break;
+                public void handle(KeyEvent event) {
+                    switch (event.getCode()) {
+                        case W -> desiredRequest = GameRequest.MOVE_UP;
+                        case S -> desiredRequest = GameRequest.MOVE_DOWN;
+                        case A -> desiredRequest = GameRequest.MOVE_LEFT;
+                        case D -> desiredRequest = GameRequest.MOVE_RIGHT;
+                        case P -> desiredRequest = GameRequest.LEAVE;
                     }
                 }
             });
 
             primaryStage.setOnCloseRequest
                     (
-                            new EventHandler<WindowEvent>()
-                            {
-                                public void handle(WindowEvent we)
-                                {
+                            new EventHandler<WindowEvent>() {
+                                public void handle(WindowEvent we) {
                                     closeGame();
                                 }
                             }
@@ -117,203 +91,144 @@ public class Client extends Application
             ObjectInputStream socketInputStream = new ObjectInputStream(socket.getInputStream());
             GameMessage joinResponse = (GameMessage) socketInputStream.readObject();
 
-            if(joinResponse.getGameRequest() != GameRequest.OK)
-            {
+            if (joinResponse.getGameRequest() != GameRequest.OK) {
                 GUIClientCreator.showAlert("Serwer odrzucił połączenie.");
                 System.exit(1);
             }
 
-            receiveWorldRunnable = new Runnable()
-            {
-                public void run()
-                {
+            receiveWorldRunnable = new Runnable() {
+                public void run() {
                     receiveWorld();
                 }
             };
             receiveWorldThread = new Thread(receiveWorldRunnable);
             receiveWorldThread.start();
-        }
-        catch(FileNotFoundException fnfe)
-        {
-            receiveWorldRunnable = new Runnable()
-            {
-                public void run()
-                {
+        } catch (FileNotFoundException fnfe) {
+            receiveWorldRunnable = new Runnable() {
+                public void run() {
                     GUIClientCreator.showAlert("Brakuje plików.");
                 }
             };
             System.exit(1);
-        }
-        catch(SocketException se)
-        {
-            receiveWorldRunnable = new Runnable()
-            {
-                public void run()
-                {
+        } catch (SocketException se) {
+            receiveWorldRunnable = new Runnable() {
+                public void run() {
                     GUIClientCreator.showAlert("Serwer może nie być aktywny.");
                 }
             };
             System.exit(1);
-        }
-        catch(EOFException eofe) { }
-        catch(IOException ioe)
-        {
+        } catch (EOFException eofe) {
+        } catch (IOException | ClassNotFoundException ioe) {
             ioe.printStackTrace();
-        }
-        catch(ClassNotFoundException cnfe)
-        {
-            cnfe.printStackTrace();
         }
     }
 
-    public static void closeGame()
-    {
-        try
-        {
+    public static void closeGame() {
+        try {
             socket.close();
-        }
-        catch(IOException ioe)
-        {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
-    public static WorldState getWorldState()
-    {
+    public static WorldState getWorldState() {
         return worldState;
     }
 
-    private static void receiveWorld()
-    {
-        while(true)
-        {
-            try
-            {
+    private static void receiveWorld() {
+        while (true) {
+            try {
                 GameMessage moveMessage = null;
                 ObjectOutputStream socketOutputStream = null;
 
-                switch(desiredRequest)
-                {
-                    case MOVE_DOWN:
+                switch (desiredRequest) {
+                    case MOVE_DOWN -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_DOWN);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case MOVE_UP:
+                    }
+                    case MOVE_UP -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_UP);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case MOVE_LEFT:
+                    }
+                    case MOVE_LEFT -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_LEFT);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case MOVE_RIGHT:
+                    }
+                    case MOVE_RIGHT -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_RIGHT);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case LEAVE:
+                    }
+                    case LEAVE -> {
                         moveMessage = new GameMessage(GameRequest.LEAVE);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    default:
+                    }
+                    default -> {
                         moveMessage = new GameMessage(GameRequest.WORLD);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
-                    break;
+                    }
                 }
 
                 ObjectInputStream socketInputStream = new ObjectInputStream(socket.getInputStream());
                 GameMessage receivedWorld = (GameMessage) socketInputStream.readObject();
-                if(receivedWorld.getWorldState() != null)
-                {
+                if (receivedWorld.getWorldState() != null) {
                     worldState = receivedWorld.getWorldState();
                     clientGUI.resizeCanvas(worldState.getGameboardX() * TILE_X, worldState.getGameboardY() * TILE_Y);
                     clientGUI.moveCanvas(SCREEN_WIDTH - worldState.getGameboardX() * TILE_X - 20, 8);
                     clientGUI.drawGame();
 
-                    if(!laterSetup)
-                    {
+                    if (!laterSetup) {
                         laterSetup = true;
 
-                        Platform.runLater(new Runnable()
-                        {
+                        Platform.runLater(new Runnable() {
                             @Override
-                            public void run()
-                            {
+                            public void run() {
                                 clientGUI.setupLaterElements();
                             }
                         });
                     }
 
-                    Platform.runLater(new Runnable()
-                    {
+                    Platform.runLater(new Runnable() {
                         @Override
-                        public void run()
-                        {
+                        public void run() {
                             clientGUI.updateGUIElements();
                         }
                     });
                 }
-            }
-            catch(FileNotFoundException fnfe)
-            {
+            } catch (FileNotFoundException fnfe) {
 
-                Platform.runLater(new Runnable()
-                {
+                Platform.runLater(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         GUIClientCreator.showAlert("Brakuje plików.");
                     }
                 });
                 System.exit(1);
-            }
-            catch(SocketException se)
-            {
-                Platform.runLater(new Runnable()
-                {
+            } catch (SocketException | EOFException se) {
+                Platform.runLater(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         GUIClientCreator.showAlert("Błąd połączenia.");
                     }
                 });
                 System.exit(1);
-            }
-            catch(EOFException eofe)
-            {
-                Platform.runLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        GUIClientCreator.showAlert("Błąd połączenia.");
-                    }
-                });
-                System.exit(1);
-            }
-            catch(IOException ioe)
-            {
+            } catch (IOException | ClassNotFoundException ioe) {
                 ioe.printStackTrace();
-            }
-            catch(ClassNotFoundException cnfe)
-            {
-                cnfe.printStackTrace();
             }
         }
     }
 
-    public static void setSocket(Socket s) throws SocketException
-    {
+    public static void setSocket(Socket s) throws SocketException {
         socket = s;
         socket.setSoTimeout(SOCKET_TIMEOUT);
     }

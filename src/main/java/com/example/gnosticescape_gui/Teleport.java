@@ -6,8 +6,8 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Teleport extends XYObject implements Serializable, Cloneable
 {
-    private int targetX;
-    private int targetY;
+    private final int targetX;
+    private final int targetY;
     private boolean active;
 
     public Teleport(int coordX_, int coordY_, int targetX_, int targetY_)
@@ -67,7 +67,7 @@ public class Teleport extends XYObject implements Serializable, Cloneable
 
     public void draw(GraphicsContext gc)
     {
-        if(active == true)
+        if(active)
         {
             gc.drawImage(ImagesWrapper.bluePortalImage, coordX * ImagesWrapper.tileX, coordY * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
             gc.drawImage(ImagesWrapper.orangePortalImage, targetX * ImagesWrapper.tileX, targetY * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
