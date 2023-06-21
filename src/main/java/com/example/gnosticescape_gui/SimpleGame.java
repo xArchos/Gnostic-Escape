@@ -40,7 +40,7 @@ public class SimpleGame extends Application
     static final int TILE_Y = 30;
     static final int TILE_X = 30;
 
-    private static final int INITIAL_MANA = 1000; //200
+    private static final int INITIAL_MANA = 200;
     public static final int MANA_LIMIT = 1000;
     private static final int MANA_TICK_GROWTH = 1;
     public static final int TELEPORT_COST = 400;
@@ -52,8 +52,8 @@ public class SimpleGame extends Application
     public static final int DAMAGE_VALUE = 148;
 
 
-    private static final int SPAWN_X = 0;
-    private static final int SPAWN_Y = 0;
+    public static int SPAWN_X = 0;
+    public static int SPAWN_Y = 0;
     public static final int WINDOW_WIDTH = 1300;
 
     public static int mana = INITIAL_MANA;
@@ -80,27 +80,33 @@ public class SimpleGame extends Application
     private static List<Catapult> catapultList = new ArrayList<Catapult>();
 
     private static GUICreator gui = null;
-    private static Tile[][] Map;
+    public static Tile[][] Map;
     public static int GAMEBOARD_Y;
     public static int GAMEBOARD_X;
-    private static int WINDOW_HEIGHT;
+    public static int WINDOW_HEIGHT;
 
 
 
     public static void main(String[] args)
     {
-        MapLoader mapLoader = new MapLoader();
-        Map = mapLoader.loadMap("map.txt");
-        GAMEBOARD_X = mapLoader.getGameboardX();
-        GAMEBOARD_Y = mapLoader.getGameboardY();
-        WINDOW_HEIGHT = GAMEBOARD_Y * TILE_Y + 50;
-
-
-
         launch(args);
     }
 
     public void start(Stage primaryStage)
+    {
+        GUIMapLoadingController guiMapControl = new GUIMapLoadingController();
+
+        Scene scene = new Scene(guiMapControl.root);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Gnostic Escape - Demiurg");
+        primaryStage.setMaxWidth(1200);
+        primaryStage.setMinWidth(1200);
+        primaryStage.setMaxHeight(800);
+        primaryStage.setMinHeight(800);
+        primaryStage.show();
+    }
+
+    public static void gameSetup(Stage primaryStage)
     {
         try
         {
@@ -125,49 +131,6 @@ public class SimpleGame extends Application
             primaryStage.setMinHeight(WINDOW_HEIGHT);
             primaryStage.show();
 
-            primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>()
-            {
-                @Override
-                public void handle(KeyEvent event)
-                {
-                    if(playerList.size() > 0)
-                    {
-                        switch(event.getCode())
-                        {
-                        case W:
-                            playerList.get(0).move(Direction.UP);
-                            break;
-                        case S:
-                            playerList.get(0).move(Direction.DOWN);
-                            break;
-                        case A:
-                            playerList.get(0).move(Direction.LEFT);
-                            break;
-                        case D:
-                            playerList.get(0).move(Direction.RIGHT);
-                            break;
-                        case V:
-                            togglePortals();
-                        break;
-                        case R:
-                            revertPlayer(playerList.get(0), EFFECT_TICKS);
-                        break;
-                        case T:
-                            blindPlayer(playerList.get(0), EFFECT_TICKS);
-                        break;
-                        case Y:
-                            slowPlayer(playerList.get(0), EFFECT_TICKS);
-                        break;
-                        case U:
-                            lightPlayer(playerList.get(0), EFFECT_TICKS);
-                        break;
-                        default:
-                            break;
-                        }
-                    }
-                }
-            });
-
             tl.play();
 
             new AnimationTimer()
@@ -189,15 +152,15 @@ public class SimpleGame extends Application
             acceptThread.start();
 
             primaryStage.setOnCloseRequest
-            (
-                new EventHandler<WindowEvent>()
-                {
-                    public void handle(WindowEvent we)
-                    {
-                        closeGame();
-                    }
-                }
-            );
+                    (
+                            new EventHandler<WindowEvent>()
+                            {
+                                public void handle(WindowEvent we)
+                                {
+                                    closeGame();
+                                }
+                            }
+                    );
 
             gameLock = new ReentrantLock();
         }
@@ -214,7 +177,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void run(GraphicsContext gc_)
+    private static void run(GraphicsContext gc_)
     {
         if(playerList.size() > 0)
         {
@@ -328,7 +291,7 @@ public class SimpleGame extends Application
         return Map[x][y];
     }
 
-    private void playerPizeCollision()
+    private static void playerPizeCollision()
     {
         for(int j = 0; j < playerList.size(); j++)
         {
@@ -344,7 +307,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void playerSpikeCollision()
+    private static void playerSpikeCollision()
     {
         for(int j = 0; j < playerList.size(); j++)
         {
@@ -358,7 +321,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void playerCatapultCollision()
+    private static void playerCatapultCollision()
     {
         for(int i = 0; i < catapultList.size(); i++)
         {
@@ -372,7 +335,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void playerLeverCollision()
+    private static void playerLeverCollision()
     {
         for(int i = 0; i < leverList.size(); i++)
         {
@@ -402,7 +365,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void stoneAndPlayerPressurePlateCollision()
+    private static void stoneAndPlayerPressurePlateCollision()
     {
         for(int i = 0; i < pressurePlateList.size(); i++)
         {
@@ -441,7 +404,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void stoneCatapultCollision()
+    private static void stoneCatapultCollision()
     {
         for(int i = 0; i < stoneList.size(); i++)
         {
@@ -455,7 +418,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void openingKeyCatapultCollision()
+    private static void openingKeyCatapultCollision()
     {
         for(int i = 0; i < openingKeyList.size(); i++)
         {
@@ -469,7 +432,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void playerGrowingCollision()
+    private static void playerGrowingCollision()
     {
         for(int i = 0; i < playerList.size(); i++)
         {
@@ -480,7 +443,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void advanceGrowingBlock()
+    private static void advanceGrowingBlock()
     {
         for(int i = 0; i < GAMEBOARD_X; i++)
         {
@@ -535,7 +498,7 @@ public class SimpleGame extends Application
         }
     }
 
-    private void manaGrowth()
+    private static void manaGrowth()
     {
         if(mana < MANA_LIMIT)
         {

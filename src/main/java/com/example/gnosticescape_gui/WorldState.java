@@ -1,21 +1,8 @@
 package com.example.gnosticescape_gui;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
-import java.lang.Runnable;
-import java.lang.Thread;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import javafx.util.Duration;
 
 public class WorldState implements Serializable
 {
@@ -40,7 +27,7 @@ public class WorldState implements Serializable
     private int deadPlayersNow, deadPlayersEnd;
     private int winPlayersNow, winPlayersEnd;
 
-    public WorldState(Player p) //sprawdzić czy referencje się wysypią
+    public WorldState(Player p)
     {
         gameboardX = SimpleGame.getGameboardX();
         gameboardY = SimpleGame.getGameboardY();

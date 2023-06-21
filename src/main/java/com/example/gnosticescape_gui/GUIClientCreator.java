@@ -1,7 +1,5 @@
 package com.example.gnosticescape_gui;
 
-//ślepy
-
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -119,10 +117,7 @@ public class GUIClientCreator
                 Client.getWorldState().getLeverList().get(i).draw(gc);
             }
 
-            for(int i = 0; i < Client.getWorldState().getPitfallList().size(); i++)
-            {
-                Client.getWorldState().getPitfallList().get(i).draw(gc);
-            }
+            //brak pitfall
 
             for(int i = 0; i <Client.getWorldState().getPlayerList().size(); i++)
             {
