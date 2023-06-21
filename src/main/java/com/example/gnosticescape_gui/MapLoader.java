@@ -191,13 +191,11 @@ public class MapLoader {
         return gameboardY;
     }
 
-    public int getSpawnX()
-    {
+    public int getSpawnX() {
         return spawnX;
     }
 
-    public int getSpawnY()
-    {
+    public int getSpawnY() {
         return spawnX;
     }
 }

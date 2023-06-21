@@ -9,9 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-public class DayModeSwitcher extends StackPane
-{
-    private  Rectangle backgroundRectangle = null;
+public class DayModeSwitcher extends StackPane {
+    private Rectangle backgroundRectangle = null;
     private final Button switchButton = new Button();
     private boolean isDayMode = false;
 
@@ -21,21 +20,20 @@ public class DayModeSwitcher extends StackPane
     private String backgroundRectangleStyleNight = null;
     private String switchButtonStyleNight = null;
 
-    private int backgroundWidth  = 0;
+    private int backgroundWidth = 0;
 
     private int backgroundHeight = 0;
 
     private int buttonDimmension = 0;
 
-    public DayModeSwitcher(String backgroundRectangleStyleDay, String switchButtonStyleDay,String backgroundRectangleStyleNight, String switchButtonStyleNight, int bgWidth, int bgHeight, int buttonDim)
-    {
+    public DayModeSwitcher(String backgroundRectangleStyleDay, String switchButtonStyleDay, String backgroundRectangleStyleNight, String switchButtonStyleNight, int bgWidth, int bgHeight, int buttonDim) {
         super();
         this.backgroundRectangleStyleDay = backgroundRectangleStyleDay;
         this.switchButtonStyleDay = switchButtonStyleDay;
         this.backgroundRectangleStyleNight = backgroundRectangleStyleNight;
         this.switchButtonStyleNight = switchButtonStyleNight;
 
-        this.backgroundWidth=bgWidth;
+        this.backgroundWidth = bgWidth;
         this.backgroundHeight = bgHeight;
         this.buttonDimmension = buttonDim;
 
@@ -59,20 +57,15 @@ public class DayModeSwitcher extends StackPane
         switchButton.setMinSize(buttonDimmension, buttonDimmension);
         switchButton.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.2, 0.0, 0.0, 2); -fx-background-color: " + switchButtonStyleDay + ";");
 
-        EventHandler<Event> dayModeChanger = new EventHandler<Event>()
-        {
+        EventHandler<Event> dayModeChanger = new EventHandler<Event>() {
             @Override
-            public void handle(Event e)
-            {
-                if (isDayMode)
-                {
+            public void handle(Event e) {
+                if (isDayMode) {
                     switchButton.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.2, 0.0, 0.0, 2); -fx-background-color: " + switchButtonStyleDay + ";"); //#00893d;
                     backgroundRectangle.setFill(Color.valueOf(backgroundRectangleStyleDay));
                     setAlignment(switchButton, Pos.CENTER_LEFT);
-                }
-                else
-                {
-                    switchButton.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.2, 0.0, 0.0, 2); fx-background-color: " + switchButtonStyleNight +";");
+                } else {
+                    switchButton.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.2, 0.0, 0.0, 2); fx-background-color: " + switchButtonStyleNight + ";");
                     backgroundRectangle.setFill(Color.valueOf(backgroundRectangleStyleNight));//"#80C49E"
                     setAlignment(switchButton, Pos.CENTER_RIGHT);
                 }

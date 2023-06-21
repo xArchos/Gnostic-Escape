@@ -1,12 +1,11 @@
 package com.example.gnosticescape_gui;
 
+import javafx.scene.image.Image;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import javafx.scene.image.Image;
-
-public class ImagesWrapper
-{
+public class ImagesWrapper {
     static Image PlayerImage = null;
     static Image deadPlayerImage = null;
     static Image winPlayerImage = null;
@@ -52,8 +51,7 @@ public class ImagesWrapper
     static int tileY;
     static boolean isDayMode = true;
 
-    public static void imagesSetup() throws FileNotFoundException
-    {
+    public static void imagesSetup() throws FileNotFoundException {
         FileInputStream ImgInputStream;
 
         ImgInputStream = new FileInputStream("src/main/java/com/example/gnosticescape_gui/img/player.png");

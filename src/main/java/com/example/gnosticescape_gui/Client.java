@@ -78,23 +78,12 @@ public class Client extends Application
                 @Override
                 public void handle(KeyEvent event)
                 {
-                    switch(event.getCode())
-                    {
-                        case W:
-                            desiredRequest = GameRequest.MOVE_UP;
-                            break;
-                        case S:
-                            desiredRequest = GameRequest.MOVE_DOWN;
-                            break;
-                        case A:
-                            desiredRequest = GameRequest.MOVE_LEFT;
-                            break;
-                        case D:
-                            desiredRequest = GameRequest.MOVE_RIGHT;
-                            break;
-                        case P:
-                            desiredRequest = GameRequest.LEAVE;
-                            break;
+                    switch (event.getCode()) {
+                        case W -> desiredRequest = GameRequest.MOVE_UP;
+                        case S -> desiredRequest = GameRequest.MOVE_DOWN;
+                        case A -> desiredRequest = GameRequest.MOVE_LEFT;
+                        case D -> desiredRequest = GameRequest.MOVE_RIGHT;
+                        case P -> desiredRequest = GameRequest.LEAVE;
                     }
                 }
             });
@@ -156,13 +145,9 @@ public class Client extends Application
             System.exit(1);
         }
         catch(EOFException eofe) { }
-        catch(IOException ioe)
+        catch(IOException | ClassNotFoundException ioe)
         {
             ioe.printStackTrace();
-        }
-        catch(ClassNotFoundException cnfe)
-        {
-            cnfe.printStackTrace();
         }
     }
 
@@ -192,43 +177,42 @@ public class Client extends Application
                 GameMessage moveMessage = null;
                 ObjectOutputStream socketOutputStream = null;
 
-                switch(desiredRequest)
-                {
-                    case MOVE_DOWN:
+                switch (desiredRequest) {
+                    case MOVE_DOWN -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_DOWN);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case MOVE_UP:
+                    }
+                    case MOVE_UP -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_UP);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case MOVE_LEFT:
+                    }
+                    case MOVE_LEFT -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_LEFT);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case MOVE_RIGHT:
+                    }
+                    case MOVE_RIGHT -> {
                         moveMessage = new GameMessage(GameRequest.MOVE_RIGHT);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    case LEAVE:
+                    }
+                    case LEAVE -> {
                         moveMessage = new GameMessage(GameRequest.LEAVE);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
                         desiredRequest = GameRequest.OK;
-                    break;
-                    default:
+                    }
+                    default -> {
                         moveMessage = new GameMessage(GameRequest.WORLD);
                         socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         socketOutputStream.writeObject(moveMessage);
-                    break;
+                    }
                 }
 
                 ObjectInputStream socketInputStream = new ObjectInputStream(socket.getInputStream());
@@ -277,7 +261,7 @@ public class Client extends Application
                 });
                 System.exit(1);
             }
-            catch(SocketException se)
+            catch(SocketException | EOFException se)
             {
                 Platform.runLater(new Runnable()
                 {
@@ -289,25 +273,9 @@ public class Client extends Application
                 });
                 System.exit(1);
             }
-            catch(EOFException eofe)
-            {
-                Platform.runLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        GUIClientCreator.showAlert("Błąd połączenia.");
-                    }
-                });
-                System.exit(1);
-            }
-            catch(IOException ioe)
+            catch(IOException | ClassNotFoundException ioe)
             {
                 ioe.printStackTrace();
-            }
-            catch(ClassNotFoundException cnfe)
-            {
-                cnfe.printStackTrace();
             }
         }
     }

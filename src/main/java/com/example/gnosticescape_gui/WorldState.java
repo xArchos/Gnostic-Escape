@@ -4,10 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorldState implements Serializable
-{
-    private int gameboardX;
-    private int gameboardY;
+public class WorldState implements Serializable {
+    private final int gameboardX;
+    private final int gameboardY;
     private Tile[][] tiles = null;
 
     private List<Player> playerList = null;
@@ -24,11 +23,12 @@ public class WorldState implements Serializable
     private List<Catapult> catapultList = null;
 
     private Player player = null;
-    private int deadPlayersNow, deadPlayersEnd;
-    private int winPlayersNow, winPlayersEnd;
+    private final int deadPlayersNow;
+    private final int deadPlayersEnd;
+    private final int winPlayersNow;
+    private final int winPlayersEnd;
 
-    public WorldState(Player p)
-    {
+    public WorldState(Player p) {
         gameboardX = SimpleGame.getGameboardX();
         gameboardY = SimpleGame.getGameboardY();
         tiles = new Tile[gameboardX][gameboardY];
@@ -39,10 +39,8 @@ public class WorldState implements Serializable
         deadPlayersNow = SimpleGame.deadPlayersCount;
         winPlayersNow = SimpleGame.winPlayersCount;
 
-        for(int i = 0; i < gameboardX; i++)
-        {
-            for(int j = 0; j < gameboardY; j++)
-            {
+        for (int i = 0; i < gameboardX; i++) {
+            for (int j = 0; j < gameboardY; j++) {
                 tiles[i][j] = SimpleGame.getTileByIndex(i, j);
             }
         }
@@ -60,164 +58,132 @@ public class WorldState implements Serializable
         leverList = new ArrayList<Lever>();
         catapultList = new ArrayList<Catapult>();
 
-        for(Player player : SimpleGame.getPlayerList())
-        {
+        for (Player player : SimpleGame.getPlayerList()) {
             playerList.add(player.clone());
         }
 
-        for(Stone stone : SimpleGame.getStoneList())
-        {
+        for (Stone stone : SimpleGame.getStoneList()) {
             stoneList.add(stone.clone());
         }
 
-        for(Teleport teleport : SimpleGame.getTeleportList())
-        {
+        for (Teleport teleport : SimpleGame.getTeleportList()) {
             teleportList.add(teleport.clone());
         }
 
-        for(Prize prize : SimpleGame.getPrizeList())
-        {
+        for (Prize prize : SimpleGame.getPrizeList()) {
             prizeList.add(prize.clone());
         }
 
-        for(Gate gate : SimpleGame.getGateList())
-        {
+        for (Gate gate : SimpleGame.getGateList()) {
             gateList.add(gate.clone());
         }
 
-        for(OpeningKey openingKey : SimpleGame.getOpeningKeyList())
-        {
+        for (OpeningKey openingKey : SimpleGame.getOpeningKeyList()) {
             openingKeyList.add(openingKey.clone());
         }
 
-        for(HealthPack healthPack : SimpleGame.getHealthPackList())
-        {
+        for (HealthPack healthPack : SimpleGame.getHealthPackList()) {
             healthPackList.add(healthPack.clone());
         }
 
-        for(Spike spike : SimpleGame.getSpikeList())
-        {
+        for (Spike spike : SimpleGame.getSpikeList()) {
             spikeList.add(spike.clone());
         }
 
-        for(Pitfall pitfall : SimpleGame.getPitfallList())
-        {
+        for (Pitfall pitfall : SimpleGame.getPitfallList()) {
             pitfallList.add(pitfall.clone());
         }
 
-        for(PressurePlate pressurePlate : SimpleGame.getPressurePlateList())
-        {
+        for (PressurePlate pressurePlate : SimpleGame.getPressurePlateList()) {
             pressurePlateList.add(pressurePlate.clone());
         }
 
-        for(Lever lever : SimpleGame.getLeverList())
-        {
+        for (Lever lever : SimpleGame.getLeverList()) {
             leverList.add(lever.clone());
         }
 
-        for(Catapult catapult : SimpleGame.getCatapultList())
-        {
+        for (Catapult catapult : SimpleGame.getCatapultList()) {
             catapultList.add(catapult.clone());
         }
     }
 
-    public Player getPlayer()
-    {
+    public Player getPlayer() {
         return player;
     }
 
-    public int getDeadPlayersNow()
-    {
+    public int getDeadPlayersNow() {
         return deadPlayersNow;
     }
 
-    public int getDeadPlayersEnd()
-    {
+    public int getDeadPlayersEnd() {
         return deadPlayersEnd;
     }
 
-    public int getWinPlayersNow()
-    {
+    public int getWinPlayersNow() {
         return winPlayersNow;
     }
 
-    public int getWinPlayersEnd()
-    {
+    public int getWinPlayersEnd() {
         return winPlayersEnd;
     }
 
-    public int getGameboardX()
-    {
+    public int getGameboardX() {
         return gameboardX;
     }
 
-    public int getGameboardY()
-    {
+    public int getGameboardY() {
         return gameboardY;
     }
 
-    public List<Teleport> getTeleportList()
-    {
+    public List<Teleport> getTeleportList() {
         return teleportList;
     }
 
-    public List<Player> getPlayerList()
-    {
+    public List<Player> getPlayerList() {
         return playerList;
     }
 
-    public List<Stone> getStoneList()
-    {
+    public List<Stone> getStoneList() {
         return stoneList;
     }
 
-    public List<Prize> getPrizeList()
-    {
+    public List<Prize> getPrizeList() {
         return prizeList;
     }
 
-    public List<Gate> getGateList()
-    {
+    public List<Gate> getGateList() {
         return gateList;
     }
 
-    public List<OpeningKey> getOpeningKeyList()
-    {
+    public List<OpeningKey> getOpeningKeyList() {
         return openingKeyList;
     }
 
-    public List<Catapult> getCatapultList()
-    {
+    public List<Catapult> getCatapultList() {
         return catapultList;
     }
 
-    public List<Lever> getLeverList()
-    {
+    public List<Lever> getLeverList() {
         return leverList;
     }
 
-    public List<PressurePlate> getPressurePlateList()
-    {
+    public List<PressurePlate> getPressurePlateList() {
         return pressurePlateList;
     }
 
-    public List<Pitfall> getPitfallList()
-    {
+    public List<Pitfall> getPitfallList() {
         return pitfallList;
     }
 
-    public List<Spike> getSpikeList()
-    {
+    public List<Spike> getSpikeList() {
         return spikeList;
     }
 
-    public List<HealthPack> getHealthPackList()
-    {
+    public List<HealthPack> getHealthPackList() {
         return healthPackList;
     }
 
-    public Tile getTileByIndex(int x, int y)
-    {
+    public Tile getTileByIndex(int x, int y) {
         return tiles[x][y];
     }
 }

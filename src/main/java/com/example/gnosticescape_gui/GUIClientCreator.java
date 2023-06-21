@@ -1,5 +1,6 @@
 package com.example.gnosticescape_gui;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,7 +12,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class GUIClientCreator
 {
@@ -138,6 +141,68 @@ public class GUIClientCreator
             {
                 gc.setLineWidth(1000);
                 gc.strokeOval(Client.getWorldState().getPlayer().getCoordX() * Client.TILE_X - 600, Client.getWorldState().getPlayer().getCoordY() * Client.TILE_Y - 600, 1200, 1200);
+            }
+
+            if(Client.getWorldState().getWinPlayersNow() >= Client.getWorldState().getWinPlayersEnd())
+            {
+                Platform.runLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        Rectangle winMessageBox = new Rectangle(500,250);
+                        winMessageBox.setArcHeight(12);
+                        winMessageBox.setArcWidth(12);
+                        winMessageBox.setFill(Color.web("#ffdab9"));
+                        Text winMessageText = new Text("UCIEKINIERZY WYGRALI");
+                        winMessageText.setFont(Font.font("Georgia",24));
+                        winMessageText.setStyle("-fx-text-fill: #36130a");
+
+                        StackPane winMessagePane= new StackPane();
+                        winMessagePane.getChildren().addAll(winMessageBox,winMessageText);
+                        winMessagePane.setStyle("-fx-background-color: transparent");
+                        winMessagePane.setMaxWidth(winMessageBox.getWidth());
+                        winMessagePane.setMinWidth(winMessageBox.getWidth());
+                        winMessagePane.setMinHeight(winMessageBox.getHeight());
+                        winMessagePane.setMinHeight(winMessageBox.getHeight());
+                        winMessagePane.setLayoutX(Client.SCREEN_WIDTH*0.5);
+                        winMessagePane.setLayoutY(200);
+
+                        root.getChildren().add(winMessagePane);
+                    }
+                });
+            }
+
+            if(Client.getWorldState().getDeadPlayersNow() >= Client.getWorldState().getDeadPlayersEnd())
+            {
+                Platform.runLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        //System.out.println("Demiurg Wygrał");
+                        Rectangle winMessageBox = new Rectangle(500,250);
+                        winMessageBox.setArcHeight(12);
+                        winMessageBox.setArcWidth(12);
+                        winMessageBox.setFill(Color.web("#ffdab9"));
+                        Text winMessageText = new Text("DEMIURG WYGRAŁ");
+                        winMessageText.setFont(Font.font("Georgia",24));
+                        winMessageText.setStyle("-fx-text-fill: #36130a");
+
+                        StackPane winMessagePane= new StackPane();
+                        winMessagePane.getChildren().addAll(winMessageBox,winMessageText);
+                        winMessagePane.setStyle("-fx-background-color: transparent");
+                        winMessagePane.setMaxWidth(winMessageBox.getWidth());
+                        winMessagePane.setMinWidth(winMessageBox.getWidth());
+                        winMessagePane.setMinHeight(winMessageBox.getHeight());
+                        winMessagePane.setMinHeight(winMessageBox.getHeight());
+                        winMessagePane.setLayoutX(Client.SCREEN_WIDTH*0.5);
+                        winMessagePane.setLayoutY(200);
+
+                        root.getChildren().add(winMessagePane);
+                    }
+                });
+
             }
         }
         catch(NullPointerException npe)
@@ -272,6 +337,13 @@ public class GUIClientCreator
             lightView.setFitHeight(80);
             lightView.setPreserveRatio(true);
             effectsVBox.getChildren().add(lightView);
+        }
+        if(Client.getWorldState().getPlayer().getIsBlind() > 0)
+        {
+            ImageView blindView = new ImageView(ImagesWrapper.blindIcon);
+            blindView.setFitHeight(80);
+            blindView.setPreserveRatio(true);
+            effectsVBox.getChildren().add(blindView);
         }
     }
 }
