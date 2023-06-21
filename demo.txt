@@ -1,4 +1,4 @@
-24 24
+24 24 0 0
 E E E E E E E B E E E E E B E E E E E E E E E E
 E E E E E E E B E E E E E B E E E E E E E E E E
 E E E E E E E B E E E E E B E E E E E E E E E E
@@ -14,7 +14,7 @@ E E E E E E E E E E E E E E E E E E E E E E E E
 E E E E E E E E E E E E E E E E E E E E E E E E
 E E E E E E E E E E E E E E E E E E E E E E E E
 E E E E E E E E E E E E E E B B B B B B B E E E
-E E E E E E E E E E E E E E B E E E E E B E E E
+G E E E E E E E E E E E E E B E E E E E B E E E
 E E E E E E E E E E E E E E B E E E E E B E E E
 E E E E E E E E E E E E E E B E E E E E B E E E
 E E E E E E E E E E E E E E B E E E E E B E E E
@@ -23,12 +23,6 @@ E E E E E E E E E E E E E E B B B B B B B E E E
 E E E E E E E E E E E E E E E E E E E E E E E E
 E E E E E E E E E E E E E E E E E E E E E E E E
 E E E E E E E E E E E E E E E E E E E E E E E E
-{PLAYER}
-2 2
-{PLAYER}
-4 4
-{PLAYER}
-6 6
 {TELEPORT}
 10 10 17 17
 {TELEPORT}
@@ -46,7 +40,7 @@ E E E E E E E E E E E E E E E E E E E E E E E E
 {GATE}
 10 5
 {SPIKE}
-3 11 200
+3 11 20
 {PITFALL}
 14 6 200
 {HEALTHPACK}

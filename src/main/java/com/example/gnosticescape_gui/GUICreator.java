@@ -589,7 +589,7 @@ public class GUICreator
 
       manaValueLabel = new Label();
       manaValueLabel.setText(SimpleGame.mana + "/1000");
-      manaValueLabel.setFont( Font.font("Georgia",20)); //Georgia
+      manaValueLabel.setFont( Font.font("Georgia",20));
       manaValueLabel.setStyle("-fx-text-fill: #ffffff;");
       manaValueLabel.setLayoutX((400 - manaValueLabel.getWidth()) * 0.5);
       manaValueLabel.setLayoutY(30);

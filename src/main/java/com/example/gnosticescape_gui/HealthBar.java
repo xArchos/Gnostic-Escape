@@ -2,12 +2,10 @@ package com.example.gnosticescape_gui;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.BorderPane;
 
 class HealthBar extends ProgressBar
 {
     private Player player =null;
-    //private ProgressBar hpBar;
     private Label hpLabel;
 
     HealthBar(Player player)

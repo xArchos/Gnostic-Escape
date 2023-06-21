@@ -1,52 +1,22 @@
 package com.example.gnosticescape_gui;
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.lang.ClassCastException;
 import java.lang.ClassNotFoundException;
-import java.lang.InterruptedException;
-import java.lang.NullPointerException;
 import java.lang.Runnable;
 import java.lang.Thread;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
-import javafx.util.Duration;
-
-import javafx.animation.*;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.image.Image;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.event.EventHandler;
 
 public class Client extends Application
 {
@@ -56,8 +26,8 @@ public class Client extends Application
     public static final int SCREEN_HEIGHT = 770;
     public static final int TILE_Y = 30;
     public static final int TILE_X = 30;
-    private static final int PORT = 1388;
-    private static final String ADDRESS = "localhost";
+    public static int PORT = 1388;
+    public static String ADDRESS = "localhost";
     private static final int SOCKET_TIMEOUT = 5000;
     private static boolean laterSetup = false;
 
@@ -77,18 +47,30 @@ public class Client extends Application
 
     public void start(Stage primaryStage)
     {
+        GUIClientConnectionController guiConnect = new GUIClientConnectionController();
+        primaryStage.setTitle("Gnostic Escape - Uciekinier");
+        primaryStage.setScene(new Scene(guiConnect.root));
+        primaryStage.setMaxWidth(SCREEN_WIDTH);
+        primaryStage.setMinWidth(SCREEN_WIDTH);
+        primaryStage.setMaxHeight(SCREEN_HEIGHT);
+        primaryStage.setMinHeight(SCREEN_HEIGHT);
+        primaryStage.show();
+    }
+
+    public static void clientSetup(Stage primaryStage)
+    {
         try
         {
-            primaryStage.setTitle("Gnostic Escape - Uciekinier");
-            primaryStage.show();
-
             ImagesWrapper.imagesSetup();
             ImagesWrapper.tileX = TILE_X;
             ImagesWrapper.tileY = TILE_Y;
 
             clientGUI = new GUIClientCreator();
 
+            primaryStage.setTitle("Gnostic Escape - Uciekinier");
             primaryStage.setScene(new Scene(clientGUI.root));
+            primaryStage.setWidth(SCREEN_WIDTH);
+            primaryStage.setHeight(SCREEN_HEIGHT);
             primaryStage.show();
 
             primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>()
@@ -109,30 +91,24 @@ public class Client extends Application
                             break;
                         case D:
                             desiredRequest = GameRequest.MOVE_RIGHT;
-                        break;
+                            break;
                         case P:
                             desiredRequest = GameRequest.LEAVE;
-                        break;
+                            break;
                     }
                 }
             });
 
             primaryStage.setOnCloseRequest
-            (
-                new EventHandler<WindowEvent>()
-                {
-                    public void handle(WindowEvent we)
-                    {
-                        closeGame();
-                    }
-                }
-            );
-
-            primaryStage.setWidth(SCREEN_WIDTH);
-            primaryStage.setHeight(SCREEN_HEIGHT);
-
-            socket = new Socket(ADDRESS, PORT);
-            socket.setSoTimeout(SOCKET_TIMEOUT);
+                    (
+                            new EventHandler<WindowEvent>()
+                            {
+                                public void handle(WindowEvent we)
+                                {
+                                    closeGame();
+                                }
+                            }
+                    );
 
             GameMessage joinMessage = new GameMessage(GameRequest.JOIN);
             ObjectOutputStream socketOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -334,6 +310,12 @@ public class Client extends Application
                 cnfe.printStackTrace();
             }
         }
+    }
+
+    public static void setSocket(Socket s) throws SocketException
+    {
+        socket = s;
+        socket.setSoTimeout(SOCKET_TIMEOUT);
     }
 }
 

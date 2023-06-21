@@ -1,6 +1,5 @@
 package com.example.gnosticescape_gui;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.Pane;
 
