@@ -26,7 +26,7 @@ public class SimpleGame extends Application {
     static final int WIN_PLAYERS_END = 2;
     static final int DEAD_PLAYERS_END = 2;
     private static final int TICK_CHECK = 80;
-    public static final int EFFECT_TICKS = 80;
+    public static final int EFFECT_TICKS = 160;
     private static final int TICK_TIME_MILLIS = 100;
     static final int TILE_Y = 30;
     static final int TILE_X = 30;
@@ -57,18 +57,18 @@ public class SimpleGame extends Application {
     private static Thread acceptThread;
     private static Lock gameLock;
 
-    private static List<Player> playerList = new ArrayList<Player>();
-    private static List<Stone> stoneList = new ArrayList<Stone>();
-    private static List<Teleport> teleportList = new ArrayList<Teleport>();
-    private static List<Prize> prizeList = new ArrayList<Prize>();
-    private static List<Gate> gateList = new ArrayList<Gate>();
-    private static List<OpeningKey> openingKeyList = new ArrayList<OpeningKey>();
-    private static List<HealthPack> healthPackList = new ArrayList<HealthPack>();
-    private static List<Spike> spikeList = new ArrayList<Spike>();
-    private static List<Pitfall> pitfallList = new ArrayList<Pitfall>();
-    private static List<PressurePlate> pressurePlateList = new ArrayList<PressurePlate>();
-    private static List<Lever> leverList = new ArrayList<Lever>();
-    private static List<Catapult> catapultList = new ArrayList<Catapult>();
+    private static final List<Player> playerList = new ArrayList<Player>();
+    private static final List<Stone> stoneList = new ArrayList<Stone>();
+    private static final List<Teleport> teleportList = new ArrayList<Teleport>();
+    private static final List<Prize> prizeList = new ArrayList<Prize>();
+    private static final List<Gate> gateList = new ArrayList<Gate>();
+    private static final List<OpeningKey> openingKeyList = new ArrayList<OpeningKey>();
+    private static final List<HealthPack> healthPackList = new ArrayList<HealthPack>();
+    private static final List<Spike> spikeList = new ArrayList<Spike>();
+    private static final List<Pitfall> pitfallList = new ArrayList<Pitfall>();
+    private static final List<PressurePlate> pressurePlateList = new ArrayList<PressurePlate>();
+    private static final List<Lever> leverList = new ArrayList<Lever>();
+    private static final List<Catapult> catapultList = new ArrayList<Catapult>();
 
     private static GUICreator gui = null;
     public static Tile[][] Map;
@@ -171,8 +171,8 @@ public class SimpleGame extends Application {
                     advanceGrowingBlock();
                 }
 
-                for (int i = 0; i < playerList.size(); i++) {
-                    playerList.get(i).enchantmentsTimeAdvance();
+                for (Player player : playerList) {
+                    player.enchantmentsTimeAdvance();
                 }
                 unlockMutex();
             }
@@ -247,11 +247,11 @@ public class SimpleGame extends Application {
     }
 
     private static void playerPizeCollision() {
-        for (int j = 0; j < playerList.size(); j++) {
-            for (int i = 0; i < prizeList.size(); i++) {
-                if (playerList.get(j).getCoordX() == prizeList.get(i).getCoordX() && playerList.get(j).getCoordY() == prizeList.get(i).getCoordY() && !playerList.get(j).isWin()) {
-                    playerList.get(j).setWin();
-                    playerList.get(j).setXY(SPAWN_X + winPlayersCount, SPAWN_Y);
+        for (Player player : playerList) {
+            for (Prize prize : prizeList) {
+                if (player.getCoordX() == prize.getCoordX() && player.getCoordY() == prize.getCoordY() && !player.isWin()) {
+                    player.setWin();
+                    player.setXY(SPAWN_X + winPlayersCount, SPAWN_Y);
                     winPlayersCount++;
                 }
             }
@@ -259,20 +259,20 @@ public class SimpleGame extends Application {
     }
 
     private static void playerSpikeCollision() {
-        for (int j = 0; j < playerList.size(); j++) {
-            for (int i = 0; i < spikeList.size(); i++) {
-                if (playerList.get(j).getCoordX() == spikeList.get(i).getCoordX() && playerList.get(j).getCoordY() == spikeList.get(i).getCoordY()) {
-                    playerList.get(j).addHealth(-spikeList.get(i).getDamage());
+        for (Player player : playerList) {
+            for (Spike spike : spikeList) {
+                if (player.getCoordX() == spike.getCoordX() && player.getCoordY() == spike.getCoordY()) {
+                    player.addHealth(-spike.getDamage());
                 }
             }
         }
     }
 
     private static void playerCatapultCollision() {
-        for (int i = 0; i < catapultList.size(); i++) {
-            for (int j = 0; j < playerList.size(); j++) {
-                if (playerList.get(j).getCoordX() == catapultList.get(i).getCoordX() && playerList.get(j).getCoordY() == catapultList.get(i).getCoordY()) {
-                    playerList.get(j).moveByCatapult(catapultList.get(i).getDirection(), catapultList.get(i).getPower());
+        for (Catapult catapult : catapultList) {
+            for (Player player : playerList) {
+                if (player.getCoordX() == catapult.getCoordX() && player.getCoordY() == catapult.getCoordY()) {
+                    player.moveByCatapult(catapult.getDirection(), catapult.getPower());
                 }
             }
         }
@@ -294,7 +294,7 @@ public class SimpleGame extends Application {
                 leverList.get(i).turnOff();
             }
 
-            if (leverList.get(i).isPowered() == true && wasLeverPowered == false) {
+            if (leverList.get(i).isPowered() && !wasLeverPowered) {
                 leverList.get(i).togglePortal();
             }
 
@@ -307,15 +307,15 @@ public class SimpleGame extends Application {
             boolean wasPressurePlatePowered = pressurePlateList.get(i).wasPowered();
             boolean pressed = false;
 
-            for (int j = 0; j < stoneList.size(); j++) {
-                if (pressurePlateList.get(i).getCoordX() == stoneList.get(j).getCoordX() && pressurePlateList.get(i).getCoordY() == stoneList.get(j).getCoordY()) {
+            for (Stone stone : stoneList) {
+                if (pressurePlateList.get(i).getCoordX() == stone.getCoordX() && pressurePlateList.get(i).getCoordY() == stone.getCoordY()) {
                     pressurePlateList.get(i).turnOn();
                     pressed = true;
                 }
             }
 
-            for (int j = 0; j < playerList.size(); j++) {
-                if (pressurePlateList.get(i).getCoordX() == playerList.get(j).getCoordX() && pressurePlateList.get(i).getCoordY() == playerList.get(j).getCoordY()) {
+            for (Player player : playerList) {
+                if (pressurePlateList.get(i).getCoordX() == player.getCoordX() && pressurePlateList.get(i).getCoordY() == player.getCoordY()) {
                     pressurePlateList.get(i).turnOn();
                     pressed = true;
                 }
@@ -334,10 +334,10 @@ public class SimpleGame extends Application {
     }
 
     private static void stoneCatapultCollision() {
-        for (int i = 0; i < stoneList.size(); i++) {
-            for (int j = 0; j < catapultList.size(); j++) {
-                if (stoneList.get(i).getCoordX() == catapultList.get(j).getCoordX() && stoneList.get(i).getCoordY() == catapultList.get(j).getCoordY()) {
-                    stoneList.get(i).moveByCatapult(catapultList.get(j).getDirection(), catapultList.get(j).getPower());
+        for (Stone stone : stoneList) {
+            for (Catapult catapult : catapultList) {
+                if (stone.getCoordX() == catapult.getCoordX() && stone.getCoordY() == catapult.getCoordY()) {
+                    stone.moveByCatapult(catapult.getDirection(), catapult.getPower());
                 }
             }
         }
@@ -354,9 +354,9 @@ public class SimpleGame extends Application {
     }
 
     private static void playerGrowingCollision() {
-        for (int i = 0; i < playerList.size(); i++) {
-            if (Map[playerList.get(i).getCoordX()][playerList.get(i).getCoordY()].getType() == TileType.GROWING) {
-                playerList.get(i).addHealth(-Tile.getGrowingDamage());
+        for (Player player : playerList) {
+            if (Map[player.getCoordX()][player.getCoordY()].getType() == TileType.GROWING) {
+                player.addHealth(-Tile.getGrowingDamage());
             }
         }
     }
@@ -540,8 +540,8 @@ public class SimpleGame extends Application {
     }
 
     private static void togglePortals() {
-        for (int i = 0; i < teleportList.size(); i++) {
-            teleportList.get(i).toggle();
+        for (Teleport teleport : teleportList) {
+            teleport.toggle();
         }
     }
 
@@ -594,8 +594,8 @@ public class SimpleGame extends Application {
             serverOn = false;
             acceptThread.interrupt();
 
-            for (int i = 0; i < playerList.size(); i++) {
-                playerList.get(i).endThreadAndRemove();
+            for (Player player : playerList) {
+                player.endThreadAndRemove();
             }
         } catch (IOException ioe) {
             GUICreator.showAlert("Wystąpił błąd odczytu.");

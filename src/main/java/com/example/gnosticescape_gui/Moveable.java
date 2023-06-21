@@ -10,12 +10,20 @@ public abstract class Moveable extends XYObject implements Serializable {
         int desiredY = coordY;
 
         switch (direction) {
-            case UP -> desiredY = desiredY - 1;
-            case DOWN -> desiredY = desiredY + 1;
-            case RIGHT -> desiredX = desiredX + 1;
-            case LEFT -> desiredX = desiredX - 1;
-            default -> {
-            }
+            case UP:
+                desiredY = desiredY - 1;
+                break;
+            case DOWN:
+                desiredY = desiredY + 1;
+                break;
+            case RIGHT:
+                desiredX = desiredX + 1;
+                break;
+            case LEFT:
+                desiredX = desiredX - 1;
+                break;
+            default:
+                break;
         }
 
         if (desiredX < 0 || desiredY < 0) {

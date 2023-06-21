@@ -22,7 +22,7 @@ public class GUIClientConnectionController {
     public Pane root = new Pane();
     private final TextField portField = new TextField();
     private final TextField ipField = new TextField();
-    private final Button connectButton = new Button();
+    private Button connectButton = new Button();
 
     public GUIClientConnectionController() {
         ipField.setPromptText("Podaj IP...");

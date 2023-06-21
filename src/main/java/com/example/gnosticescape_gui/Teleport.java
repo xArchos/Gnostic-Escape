@@ -1,17 +1,15 @@
 package com.example.gnosticescape_gui;
 
-import java.io.Serializable;
-
 import javafx.scene.canvas.GraphicsContext;
 
-public class Teleport extends XYObject implements Serializable, Cloneable
-{
+import java.io.Serializable;
+
+public class Teleport extends XYObject implements Serializable, Cloneable {
     private final int targetX;
     private final int targetY;
     private boolean active;
 
-    public Teleport(int coordX_, int coordY_, int targetX_, int targetY_)
-    {
+    public Teleport(int coordX_, int coordY_, int targetX_, int targetY_) {
         coordX = coordX_;
         coordY = coordY_;
         targetX = targetX_;
@@ -19,8 +17,7 @@ public class Teleport extends XYObject implements Serializable, Cloneable
         active = true;
     }
 
-    public Teleport(int coordX_, int coordY_, int targetX_, int targetY_, boolean active_)
-    {
+    public Teleport(int coordX_, int coordY_, int targetX_, int targetY_, boolean active_) {
         coordX = coordX_;
         coordY = coordY_;
         targetX = targetX_;
@@ -29,51 +26,40 @@ public class Teleport extends XYObject implements Serializable, Cloneable
     }
 
     @Override
-    public Teleport clone()
-    {
+    public Teleport clone() {
         Teleport t = new Teleport(coordX, coordY, targetX, targetY, active);
         return t;
     }
 
-    public int getTargetX()
-    {
+    public int getTargetX() {
         return targetX;
     }
 
-    public int getTargetY()
-    {
+    public int getTargetY() {
         return targetY;
     }
 
-    public boolean isActive()
-    {
+    public boolean isActive() {
         return active;
     }
 
-    public void toggle()
-    {
+    public void toggle() {
         active = !active;
     }
 
-    public void turnOn()
-    {
+    public void turnOn() {
         active = true;
     }
 
-    public void turnOff()
-    {
+    public void turnOff() {
         active = false;
     }
 
-    public void draw(GraphicsContext gc)
-    {
-        if(active)
-        {
+    public void draw(GraphicsContext gc) {
+        if (active) {
             gc.drawImage(ImagesWrapper.bluePortalImage, coordX * ImagesWrapper.tileX, coordY * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
             gc.drawImage(ImagesWrapper.orangePortalImage, targetX * ImagesWrapper.tileX, targetY * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
-        }
-        else
-        {
+        } else {
             gc.drawImage(ImagesWrapper.blueOffPortalImage, coordX * ImagesWrapper.tileX, coordY * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
             gc.drawImage(ImagesWrapper.orangeOffPortalImage, targetX * ImagesWrapper.tileX, targetY * ImagesWrapper.tileY, ImagesWrapper.tileX, ImagesWrapper.tileY);
         }

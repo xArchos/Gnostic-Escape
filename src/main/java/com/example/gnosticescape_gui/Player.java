@@ -6,6 +6,7 @@ import javafx.scene.text.Font;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ListIterator;
 
 public class Player extends Moveable implements Serializable, Cloneable {
@@ -180,7 +181,7 @@ public class Player extends Moveable implements Serializable, Cloneable {
 
         lastMoveTeleported = false;
 
-        if (!lastMoveTeleported) {
+        if (lastMoveTeleported == false) {
             for (int i = 0; i < SimpleGame.getTeleportList().size(); i++) {
                 if (desiredX == SimpleGame.getTeleportList().get(i).getCoordX() && desiredY == SimpleGame.getTeleportList().get(i).getCoordY() && SimpleGame.getTeleportList().get(i).isActive()) {
                     desiredX = SimpleGame.getTeleportList().get(i).getTargetX();
@@ -273,13 +274,21 @@ public class Player extends Moveable implements Serializable, Cloneable {
                 ObjectOutputStream socketOutputStream = null;
                 GameMessage responseMessage = null;
 
+                if (SimpleGame.WIN_PLAYERS_END <= SimpleGame.winPlayersCount || SimpleGame.DEAD_PLAYERS_END <= SimpleGame.deadPlayersCount) {
+                    worldState = new WorldState(this);
+                    responseMessage = new GameMessage(GameRequest.OK, worldState);
+                    socketOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
+                    socketOutputStream.writeObject(responseMessage);
+                    Thread.sleep(100);
+                    continue;
+                }
+
                 switch (gameMessage.getGameRequest()) {
                     case WORLD -> {
                         worldState = new WorldState(this);
                         responseMessage = new GameMessage(GameRequest.OK, worldState);
                         socketOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
                         socketOutputStream.writeObject(responseMessage);
-                        System.out.println("Wysyłam świat!");
                     }
                     case MOVE_UP -> {
                         SimpleGame.lockMutex();
@@ -289,7 +298,6 @@ public class Player extends Moveable implements Serializable, Cloneable {
                         responseMessage = new GameMessage(GameRequest.OK, worldState);
                         socketOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
                         socketOutputStream.writeObject(responseMessage);
-                        System.out.println("Góra!");
                     }
                     case MOVE_DOWN -> {
                         SimpleGame.lockMutex();
@@ -299,7 +307,6 @@ public class Player extends Moveable implements Serializable, Cloneable {
                         responseMessage = new GameMessage(GameRequest.OK, worldState);
                         socketOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
                         socketOutputStream.writeObject(responseMessage);
-                        System.out.println("Dół!");
                     }
                     case MOVE_LEFT -> {
                         SimpleGame.lockMutex();
@@ -309,7 +316,6 @@ public class Player extends Moveable implements Serializable, Cloneable {
                         responseMessage = new GameMessage(GameRequest.OK, worldState);
                         socketOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
                         socketOutputStream.writeObject(responseMessage);
-                        System.out.println("Lewo!");
                     }
                     case MOVE_RIGHT -> {
                         SimpleGame.lockMutex();
@@ -319,22 +325,28 @@ public class Player extends Moveable implements Serializable, Cloneable {
                         responseMessage = new GameMessage(GameRequest.OK, worldState);
                         socketOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
                         socketOutputStream.writeObject(responseMessage);
-                        System.out.println("Prawo!");
                     }
                     case LEAVE -> {
                         removePlayer();
-                        System.out.println("Wyjście!");
                         return;
                     }
                 }
 
                 Thread.sleep(100);
             }
+        } catch (SocketException se) {
+            removePlayer();
         } catch (EOFException eofe) {
             removePlayer();
-        } catch (IOException | ClassNotFoundException | InterruptedException ioe) {
+        } catch (IOException ioe) {
             removePlayer();
             ioe.printStackTrace();
+        } catch (ClassNotFoundException cnfe) {
+            removePlayer();
+            cnfe.printStackTrace();
+        } catch (InterruptedException ie) {
+            removePlayer();
+            ie.printStackTrace();
         }
     }
 

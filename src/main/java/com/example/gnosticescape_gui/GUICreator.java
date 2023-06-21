@@ -360,28 +360,28 @@ public class GUICreator {
                 setGraphic(null);
 
                 if (!empty) {
-                    switch (name) {
-                        case "SPOWOLNIENIE" -> {
-                            setText(name + " (-" + SimpleGame.SLOW_COST + ")");
-                            iconView.setImage(ImagesWrapper.slowIcon);
-                        }
-                        case "ŚLEPOTA" -> {
-                            setText(name + " (-" + SimpleGame.BLIND_COST + ")");
-                            iconView.setImage(ImagesWrapper.blindIcon);
-                        }
-                        case "LEKKOŚĆ" -> {
-                            setText(name + " (-" + SimpleGame.LIGHT_COST + ")");
-                            iconView.setImage(ImagesWrapper.lightIcon);
-                        }
-                        case "INWERSJA" -> {
-                            setText(name + " (-" + SimpleGame.REVERSE_COST + ")");
-                            iconView.setImage(ImagesWrapper.reverseIcon);
-                        }
-                        case "OBRAŻENIA" -> {
-                            setText(name + " (-" + SimpleGame.DAMAGE_COST + ")");
-                            iconView.setImage(ImagesWrapper.damageIcon);
-                        }
-                    }
+                   switch (name) {
+                      case "SPOWOLNIENIE" -> {
+                         setText(name + " (-" + SimpleGame.SLOW_COST + ")");
+                         iconView.setImage(ImagesWrapper.slowIcon);
+                      }
+                      case "ŚLEPOTA" -> {
+                         setText(name + " (-" + SimpleGame.BLIND_COST + ")");
+                         iconView.setImage(ImagesWrapper.blindIcon);
+                      }
+                      case "LEKKOŚĆ" -> {
+                         setText(name + " (-" + SimpleGame.LIGHT_COST + ")");
+                         iconView.setImage(ImagesWrapper.lightIcon);
+                      }
+                      case "INWERSJA" -> {
+                         setText(name + " (-" + SimpleGame.REVERSE_COST + ")");
+                         iconView.setImage(ImagesWrapper.reverseIcon);
+                      }
+                      case "OBRAŻENIA" -> {
+                         setText(name + " (-" + SimpleGame.DAMAGE_COST + ")");
+                         iconView.setImage(ImagesWrapper.damageIcon);
+                      }
+                   }
 
                     iconView.setFitHeight(50);
                     iconView.setFitWidth(50);
@@ -461,27 +461,16 @@ public class GUICreator {
                     return;
                 }
 
-                boolean spellCasted = false;
+                boolean spellCasted = switch ((String) spellMenu.getValue()) {
+                   case "SPOWOLNIENIE" -> SimpleGame.slowPlayer(player, SimpleGame.EFFECT_TICKS);
+                   case "ŚLEPOTA" -> SimpleGame.blindPlayer(player, SimpleGame.EFFECT_TICKS);
+                   case "LEKKOŚĆ" -> SimpleGame.lightPlayer(player, SimpleGame.EFFECT_TICKS);
+                   case "INWERSJA" -> SimpleGame.revertPlayer(player, SimpleGame.EFFECT_TICKS);
+                   case "OBRAŻENIA" -> SimpleGame.harmPlayer(player, SimpleGame.DAMAGE_VALUE);
+                   default -> false;
+                };
 
-                switch ((String) spellMenu.getValue()) {
-                    case "SPOWOLNIENIE":
-                        spellCasted = SimpleGame.slowPlayer(player, SimpleGame.EFFECT_TICKS);
-                        break;
-                    case "ŚLEPOTA":
-                        spellCasted = SimpleGame.blindPlayer(player, SimpleGame.EFFECT_TICKS);
-                        break;
-                    case "LEKKOŚĆ":
-                        spellCasted = SimpleGame.lightPlayer(player, SimpleGame.EFFECT_TICKS);
-                        break;
-                    case "INWERSJA":
-                        spellCasted = SimpleGame.revertPlayer(player, SimpleGame.EFFECT_TICKS);
-                        break;
-                    case "OBRAŻENIA":
-                        spellCasted = SimpleGame.harmPlayer(player, SimpleGame.DAMAGE_VALUE);
-                        break;
-                }
-
-                if (!spellCasted) {
+               if (!spellCasted) {
                     showSpellInterruptedMessage("NIE MOŻNA RZUCIĆ ZAKLĘCIA");
                 }
             }

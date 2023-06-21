@@ -16,12 +16,10 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class GUIMapLoadingController {
     public Pane root = new Pane();
     private Button filenameButton = new Button();
-    private TextField filenameField = new TextField();
+    private final TextField filenameField = new TextField();
 
     public GUIMapLoadingController() {
         filenameField.setPromptText("Wprowadź nazwę pliku z mapą...");
